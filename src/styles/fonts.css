@@ -1,0 +1,24 @@
+@font-face {
+  font-family: 'Galmuri9';
+  /* font-weight: 400; */
+  font-display: swap;
+  src:
+    local('Galmuri9'),
+    url('../assets/fonts/Galmuri9.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Galmuri11';
+  /* font-weight: 400; */
+  font-display: swap;
+  src:
+    local('Galmuri11'),
+    url('../assets/fonts/Galmuri11.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Galmuri11';
+  /* font-weight: 400; */
+  font-display: swap;
+  src:
+    local('Galmuri11'),
+    url('../assets/fonts/Galmuri11.woff2') format('woff2');
+}

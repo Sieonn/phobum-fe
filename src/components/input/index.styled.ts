@@ -69,3 +69,8 @@ export const Message = styled.div<{ state: 'default' | 'error' }>`
   margin-top: 5px;
   color: ${({ state }) => (state === "default" ? colors.neon100 : colors.red100)};
 `;
+
+export const Suffix = styled.div`
+  z-index: 10; /* 높게 설정하여 클릭이 가능하도록 */
+  cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+  `;

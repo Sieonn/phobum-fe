@@ -1,66 +1,54 @@
-import { InputWrapper, InputStyled, Label, Message } from './index.styled';
-import { useState, InputHTMLAttributes } from 'react';
+import { InputWrapper, InputStyled, Label, Message, Suffix } from './index.styled';
+import { useState, InputHTMLAttributes, ReactNode } from 'react';
 import { Button } from '../button';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
-  state?: 'default' | 'error'; // 메시지 상태 (default, error)
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix' | 'suffix'> {
+  state?: 'default' | 'error';
+  prefix?: ReactNode;
+  suffix?: ReactNode;
   label: string;
-  btn?: boolean;
   message?: string;
-  climit?: number;
-  btnName?: string;
-  defaultValue?: string; // 기본값을 위한 속성
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function Input({
   label,
-  btn,
   message,
+  prefix,
+  suffix,
   state = 'default',
-  btnName,
-  defaultValue = '', // 기본값 설정
+  value,
+  onChange,
+  ...props
 }: InputProps) {
-  const [inputValue, setInputValue] = useState<string>(defaultValue); // 내부 상태로 value 관리
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
 
-  // 값 변경 핸들러
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
-  };
-
   // Label이 올라갈 조건
-  const shouldLabelBeUp = isFocused || inputValue.length > 0;
+  const shouldLabelBeUp = isFocused || value?.length > 0;
 
   return (
     <div>
       <InputWrapper>
+        {prefix && prefix}
         <InputStyled
+          {...props}
           state={state}
-          value={inputValue} // 상태값 연결
+          value={value}
+          onChange={onChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onChange={handleChange} // 값 변경 이벤트 핸들러
           required
         />
         <Label focused={shouldLabelBeUp} state={state}>
           {label}
         </Label>
-
-        {btn && (
-          <Button size="s" status="default" state={state}>
-            {btnName}
-          </Button>
-        )}
+        {suffix && <Suffix>{suffix}</Suffix>}
       </InputWrapper>
-
-      {message && (
-        <Message state={state}>
-          {message}
-        </Message>
-      )}
+      {message && <Message state={state}>{message}</Message>}
     </div>
   );
 }

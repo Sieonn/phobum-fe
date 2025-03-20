@@ -3,7 +3,6 @@ import { create } from 'zustand';
 interface User {
   id: string;
   nickname: string;
-  profileImage: string;
 }
 
 interface Store {

@@ -65,10 +65,11 @@ export const Wrapper = styled.button<WrapperProps>`
 `;
 
 const base = css<WrapperProps>`
-  border: 1px solid ${colors.neon100};
-  background: none;
+  border: 1px solid ${({ state }) => (state === 'default' ? colors.neon100 : colors.red200)};
+  /* background: none; */
+  background-color: ${({ state }) => (state === 'default' ? 'none' : colors.red200)};
   cursor: pointer;
-  color: ${colors.gray200};
+  color:  ${({ state }) => (state === 'default' ? colors.gray200 : 'black')};
 
   &:hover {
     background-color: ${({ state }) => (state === 'default' ? colors.neon200 : colors.red200)};

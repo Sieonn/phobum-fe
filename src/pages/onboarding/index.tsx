@@ -18,11 +18,31 @@ const STEPS = {
 };
 
 export default function Onboarding() {
-    const [step, setStep] = useState(STEPS.EMAIL); // 현재 스텝 상태 관리
-    const [formData, setFormData] = useState<PatchAuthOnboardingBody>({
-        email: "",
-        password: "",
-        nickname: "",
+    // URL 파라미터에서 소셜 로그인 여부 확인
+    const [isSocialLogin, setIsSocialLogin] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('social') === 'kakao';
+    });
+
+    // 초기 스텝 설정 - 소셜 로그인이면 NICKNAME부터, 아니면 EMAIL부터
+    const [step, setStep] = useState(() => 
+        isSocialLogin ? STEPS.NICKNAME : STEPS.EMAIL
+    );
+
+    const [formData, setFormData] = useState<PatchAuthOnboardingBody>(() => {
+        if (isSocialLogin) {
+            // 소셜 로그인의 경우 이메일과 비밀번호는 카카오에서 처리
+            return {
+                email: "",  // 카카오 이메일을 받아올 수 있다면 여기서 설정
+                password: "",  // 소셜 로그인은 비밀번호 불필요
+                nickname: "",
+            };
+        }
+        return {
+            email: "",
+            password: "",
+            nickname: "",
+        };
     }); // 입력 데이터를 관리
     const [emailError, setEmailError] = useState<string>(""); // 이메일 중복 에러
     const [nicknameError, setNicknameError] = useState<string>(""); // 닉네임 중복 에러
@@ -31,22 +51,45 @@ export default function Onboarding() {
 
     const navigate = useNavigate();
     const handleNextStep = async () => {
-        console.log("Form Data Before Next Step:", formData); // formData 상태 확인
+        console.log("Form Data Before Next Step:", formData);
         if (step === STEPS.COMPLETE) {
             try {
-                // 마지막 단계에서 회원가입 요청 보내기
-                const response = await axios.post("http://localhost:5001/auth/signup", formData);
+                const token = localStorage.getItem('token');
+                
+                const endpoint = isSocialLogin 
+                    ? "http://localhost:5001/auth/kakao/signup" 
+                    : "http://localhost:5001/auth/signup";
+                
+                // 소셜 로그인의 경우 닉네임만 전송
+                const requestData = isSocialLogin 
+                    ? { nickname: formData.nickname }
+                    : formData;
+                
+                const config = {
+                    headers: isSocialLogin ? {
+                        'Authorization': `Bearer ${token}`
+                    } : {}
+                };
+                
+                const response = await axios.post(endpoint, requestData, config);
+                
                 if (response.status === 201) {
-                    // 회원가입 성공 시, 리다이렉트 또는 추가 처리
                     alert("회원가입이 완료되었습니다!");
-                    navigate("/login"); // 로그인 페이지로 이동
+                    navigate("/login");
                 }
             } catch (error) {
                 console.error("회원가입 오류:", error);
                 alert("회원가입 중 오류가 발생했습니다.");
             }
         } else {
-            setStep(step + 1); // 다음 스텝으로 이동
+            // 소셜 로그인인 경우 EMAIL과 PASSWORD 스텝 건너뛰기
+            if (isSocialLogin) {
+                if (step === STEPS.NICKNAME) {
+                    setStep(STEPS.COMPLETE);
+                }
+            } else {
+                setStep(step + 1);
+            }
         }
     };
 
@@ -123,8 +166,8 @@ export default function Onboarding() {
             <AppBar type="back" />
             <Wrapper>
                 <Container>
-                    {/* 현재 스텝에 따라 다르게 렌더링 */}
-                    {step === STEPS.EMAIL && (
+                    {/* 소셜 로그인이 아닐 때만 이메일/패스워드 스텝 표시 */}
+                    {!isSocialLogin && step === STEPS.EMAIL && (
                         <>
                             <Text typo="title200">아이디를 입력해주세요</Text>
                             <Input
@@ -149,7 +192,7 @@ export default function Onboarding() {
                             />
                         </>
                     )}
-                    {step === STEPS.PASSWORD && (
+                    {!isSocialLogin && step === STEPS.PASSWORD && (
                         <>
                             <Text typo="title200">비밀번호를 입력해주세요</Text>
                             <Input
@@ -196,7 +239,7 @@ export default function Onboarding() {
                     state={emailError && !emailAvailable ? "error" : "default"}
                     onClick={handleNextStep}
                     disabled={
-                        (step === STEPS.EMAIL && !emailAvailable) ||
+                        (!isSocialLogin && step === STEPS.EMAIL && !emailAvailable) ||
                         (step === STEPS.NICKNAME && !nicknameAvailable)
                     }
                 >

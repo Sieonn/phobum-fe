@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../store/store';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const Container = styled.div`
   display: flex;
@@ -26,25 +27,46 @@ const LoginSuccess = () => {
   const setUser = useStore((state) => state.setUser);
 
   useEffect(() => {
+    const checkUserAndRedirect = async (token: string) => {
+      try {
+        // 토큰을 localStorage에 저장
+        localStorage.setItem('token', token);
+
+        // 사용자 정보 확인 요청
+        const response = await axios.get('http://localhost:5001/auth/me', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (response.data.nickname) {
+          // 닉네임이 있으면 로그인 완료 처리
+          setUser(response.data);
+          navigate('/login');
+        } else {
+          // 닉네임이 없으면 온보딩으로
+          navigate('/onboarding?social=kakao');
+        }
+      } catch (error) {
+        console.error('사용자 확인 중 오류 발생:', error);
+        navigate('/login');
+      }
+    };
+
     const token = searchParams.get('token');
     if (token) {
-      // 토큰을 localStorage에 저장
-      localStorage.setItem('token', token);
-      // 메인 페이지로 리다이렉트
-      navigate('/signup');
-      console.log(setUser)
+      checkUserAndRedirect(token);
     }
-  }, [navigate, searchParams]);
+  }, [navigate, searchParams, setUser]);
 
   return (
     <Container>
       <Content>
         <Title>로그인 성공!</Title>
         <p>잠시만 기다려주세요...</p>
-
       </Content>
     </Container>
   );
 };
 
-export default LoginSuccess; 
+export default LoginSuccess;

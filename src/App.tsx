@@ -5,6 +5,7 @@ import QueryProvider from './provider/query-provider';
 import { GlobalStyle } from './styles/global-style';
 import { Login } from './pages/login';
 import Onboarding from './pages/onboarding';
+import { Main } from './pages/main';
 function App() {
   return (
   <QueryProvider>
@@ -14,7 +15,8 @@ function App() {
       <Route path="/" element={<Intro />} />
       <Route path="/login/success" element={<LoginSuccess />} />
       <Route path="/login" element={<Login/>}/>
-      <Route path="/signup" element={<Onboarding/>}/>
+      <Route path="/onboarding" element={<Onboarding/>}/>
+      <Route path="/main" element={<Main/>}/>
     </Routes>
     </BrowserRouter>
   </QueryProvider>

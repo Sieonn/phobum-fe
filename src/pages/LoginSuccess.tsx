@@ -29,9 +29,9 @@ const LoginSuccess = () => {
   useEffect(() => {
     const checkUserAndRedirect = async (token: string) => {
       try {
-        // 토큰을 localStorage에 저장
+        console.log('Received token:', token); // 디버깅
         localStorage.setItem('token', token);
-
+        console.log('Stored token:', localStorage.getItem('token')); // 디버깅
         // 사용자 정보 확인 요청
         const response = await axios.get('http://localhost:5001/auth/me', {
           headers: {
@@ -44,18 +44,20 @@ const LoginSuccess = () => {
           setUser(response.data);
           navigate('/login');
         } else {
-          // 닉네임이 없으면 온보딩으로
-          navigate('/onboarding?social=kakao');
+       // 토큰을 쿼리 파라미터로 전달
+       navigate(`/onboarding?social=kakao&token=${token}`);
         }
       } catch (error) {
         console.error('사용자 확인 중 오류 발생:', error);
         navigate('/login');
       }
     };
-
     const token = searchParams.get('token');
     if (token) {
       checkUserAndRedirect(token);
+    } else {
+      console.error('No token found in URL parameters');
+      navigate('/login');
     }
   }, [navigate, searchParams, setUser]);
 

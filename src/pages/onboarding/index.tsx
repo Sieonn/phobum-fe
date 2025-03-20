@@ -8,7 +8,7 @@ import { Wrapper, Container } from "./index.styled";
 import { PatchAuthOnboardingBody } from "../../types/user";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { authApi } from "../../api/auth";
 // STEP 정의
 const STEPS = {
     EMAIL: 1,
@@ -51,35 +51,43 @@ export default function Onboarding() {
 
     const navigate = useNavigate();
     const handleNextStep = async () => {
-        console.log("Form Data Before Next Step:", formData);
         if (step === STEPS.COMPLETE) {
             try {
-                const token = localStorage.getItem('token');
-                
-                const endpoint = isSocialLogin 
-                    ? "http://localhost:5001/auth/kakao/signup" 
-                    : "http://localhost:5001/auth/signup";
-                
-                // 소셜 로그인의 경우 닉네임만 전송
-                const requestData = isSocialLogin 
-                    ? { nickname: formData.nickname }
-                    : formData;
-                
-                const config = {
-                    headers: isSocialLogin ? {
-                        'Authorization': `Bearer ${token}`
-                    } : {}
-                };
-                
-                const response = await axios.post(endpoint, requestData, config);
-                
+                // URL에서 토큰 파라미터 추출
+                const params = new URLSearchParams(window.location.search);
+                const token = params.get('token') || localStorage.getItem('token');
+             
+                console.log('Using token:', token); // 디버깅
+
+                if (!token) {
+                    localStorage.setItem('token', params.get('token') || ''); // 토큰이 없으면 URL 파라미터에서 가져오기
+                    throw new Error('토큰이 없습니다');
+                }
+
+                let response;
+                if (isSocialLogin) {
+                    response = await axios.post(
+                        'http://localhost:5001/auth/kakao/signup',
+                        { nickname: formData.nickname },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                } else {
+                    response = await authApi.signup(formData);
+                }
+
                 if (response.status === 201) {
                     alert("회원가입이 완료되었습니다!");
-                    navigate("/login");
+                    navigate("/main");
                 }
             } catch (error) {
                 console.error("회원가입 오류:", error);
                 alert("회원가입 중 오류가 발생했습니다.");
+                navigate("/login");
             }
         } else {
             // 소셜 로그인인 경우 EMAIL과 PASSWORD 스텝 건너뛰기
@@ -95,13 +103,10 @@ export default function Onboarding() {
 
     // 이메일 중복 체크
     const handleIdCheck = async () => {
-        console.log("이메일 중복 체크", formData.email);
         try {
-            const response = await axios.post("http://localhost:5001/auth/check-email", {
-                email: formData.email,
-            });
+            const response = await authApi.checkEmail({ email: formData.email });
             if (response.data.isAvailable) {
-                setEmailError(""); // 중복되지 않으면 에러 메시지 초기화
+                setEmailError(""); 
                 setEmailAvailable(true);
                 setEmailError("사용가능한 아이디예요")
             } else {
@@ -117,10 +122,7 @@ export default function Onboarding() {
     // 닉네임 중복 체크
     const handleNicknameCheck = async () => {
         try {
-            const response = await axios.post("http://localhost:5001/auth/check-nickname", {
-                nickname: formData.nickname,
-            });
-
+            const response = await authApi.checkNickname({ nickname: formData.nickname });
             if (response.data.isAvailable) {
                 setNicknameError("사용가능한 닉네임이에요"); // 중복되지 않으면 에러 메시지 초기화
                 setNicknameAvailable(true);
@@ -217,7 +219,7 @@ export default function Onboarding() {
                                 suffix={
                                     <Button
                                         size="s"
-                                        state="default"
+                                        state={nicknameError && !nicknameAvailable ? "error" : "default"}
                                         onClick={handleNicknameCheck}
                                         disabled={!formData.nickname} // 닉네임이 비어있으면 버튼 비활성화
                                     >

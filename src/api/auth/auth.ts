@@ -7,7 +7,7 @@ export const authApi = {
     api.post(AUTH.SIGNUP, data),
 
   kakaoSignup: (nickname: string) => 
-    api.post(AUTH.KAKAO_SIGNUP, { nickname }),
+    api.post(AUTH.KAKAO_SIGNUP, { nickname },),
 
   checkEmail: (data: CheckEmailRequest) =>
     api.post(AUTH.CHECK_EMAIL, data),

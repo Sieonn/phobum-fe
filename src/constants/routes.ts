@@ -2,6 +2,7 @@ export const ROUTE_PATHS = {
     LOGIN: '/login',
     ONBOARDING: '/signup',
 
-    MAIN:'/',
+    MAIN:'/main',
+    INTRO:'/',
     
 }

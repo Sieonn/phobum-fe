@@ -76,6 +76,8 @@ export default function Onboarding() {
                             }
                         }
                     );
+                // if (isSocialLogin) {
+                //     response = await authApi.kakaoSignup(formData.nickname);
                 } else {
                     response = await authApi.signup(formData);
                 }

@@ -3,7 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../store/store';
 import styled from 'styled-components';
 import axios from 'axios';
-
+import {ROUTE_PATHS} from '../constants/routes';
+import {TokenResponse} from '../types/token/index';
+import { User } from '../store/store';
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -21,43 +23,57 @@ const Title = styled.h1`
   margin-bottom: 1rem;
 `;
 
-const LoginSuccess = () => {
+export default function LoginSuccess() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const setUser = useStore((state) => state.setUser);
-
   useEffect(() => {
-    const checkUserAndRedirect = async (token: string) => {
+    const checkUserAndRedirect = async (accessToken: string, refreshToken: string) => {
       try {
-        console.log('Received token:', token); // 디버깅
-        localStorage.setItem('token', token);
-        console.log('Stored token:', localStorage.getItem('token')); // 디버깅
+        console.log('Received tokens:', { accessToken, refreshToken }); // 디버깅
+
+        // 토큰 저장
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
         // 사용자 정보 확인 요청
-        const response = await axios.get('http://localhost:5001/auth/me', {
+        const response = await axios.get<TokenResponse>('http://localhost:5001/auth/me', {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${accessToken}`
           }
         });
 
         if (response.data.nickname) {
-          // 닉네임이 있으면 로그인 완료 처리
-          setUser(response.data);
-          navigate('/login');
+
+          const userData: User = {
+            id: response.data.id,
+            nickname: response.data.nickname, 
+            email: response.data.email,
+            provider: response.data.provider
+          };
+
+          setUser(userData);
+          navigate(ROUTE_PATHS.MAIN, { replace: true });
         } else {
-       // 토큰을 쿼리 파라미터로 전달
-       navigate(`/onboarding?social=kakao&token=${token}`);
+          navigate(ROUTE_PATHS.ONBOARDING, {
+            replace: true,
+            state: { social: 'kakao' }
+          });
         }
       } catch (error) {
         console.error('사용자 확인 중 오류 발생:', error);
-        navigate('/login');
+        navigate(ROUTE_PATHS.LOGIN);
       }
     };
-    const token = searchParams.get('token');
-    if (token) {
-      checkUserAndRedirect(token);
+
+    const accessToken = searchParams.get('accessToken');
+    const refreshToken = searchParams.get('refreshToken');
+
+    if (accessToken && refreshToken) {
+      checkUserAndRedirect(accessToken, refreshToken);
     } else {
-      console.error('No token found in URL parameters');
-      navigate('/login');
+      console.error('토큰이 전달되지 않았습니다.');
+      navigate(ROUTE_PATHS.LOGIN);
     }
   }, [navigate, searchParams, setUser]);
 
@@ -70,5 +86,3 @@ const LoginSuccess = () => {
     </Container>
   );
 };
-
-export default LoginSuccess;

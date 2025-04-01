@@ -1,18 +1,18 @@
 import styled from "styled-components";
 import theme from "../../styles/theme";
 export const Wrapper = styled.header`
-    position: fixed;
+  position: absolute;
   top: 0;
   margin: 0 auto;
+
   z-index: ${theme.zIndex.appBar};
   width: 100%;
   height: ${theme.size.appBarHeight};
-  max-width: ${theme.size.maxWidth};
+  max-width: calc(${theme.size.maxWidth} - 50px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0px 20px;
-  gap: 16px;
+
 `;
 
 export const AppBarStyled = styled.div`

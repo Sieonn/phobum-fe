@@ -41,5 +41,5 @@ export const Container = styled.div`
   margin: auto;
   gap: 10px;
   align-items: center;
-  padding: 0 30px;
+  justify-content: center;
 `;

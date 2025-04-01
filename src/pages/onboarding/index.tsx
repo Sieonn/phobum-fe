@@ -7,8 +7,10 @@ import { Button } from "../../components/button";
 import { Wrapper, Container } from "./index.styled";
 import { PatchAuthOnboardingBody } from "../../types/user";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { authApi } from "../../api/auth";
+import { ROUTE_PATHS } from "../../constants/routes";
+import { useStore } from "../../store/store";
 // STEP 정의
 const STEPS = {
     EMAIL: 1,
@@ -18,10 +20,12 @@ const STEPS = {
 };
 
 export default function Onboarding() {
+    const setUser = useStore((state) => state.setUser);
     // URL 파라미터에서 소셜 로그인 여부 확인
+    const location = useLocation();
     const [isSocialLogin, setIsSocialLogin] = useState(() => {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('social') === 'kakao';
+        const { social, accessToken } = location.state || {};
+        return social === 'kakao' && !!accessToken;
     });
 
     // 초기 스텝 설정 - 소셜 로그인이면 NICKNAME부터, 아니면 EMAIL부터
@@ -53,36 +57,48 @@ export default function Onboarding() {
     const handleNextStep = async () => {
         if (step === STEPS.COMPLETE) {
             try {
-                // URL에서 토큰 파라미터 추출
-                const params = new URLSearchParams(window.location.search);
-                const token = params.get('token') || localStorage.getItem('token');
-             
-                console.log('Using token:', token); // 디버깅
-
-                if (!token) {
-                    localStorage.setItem('token', params.get('token') || ''); // 토큰이 없으면 URL 파라미터에서 가져오기
-                    throw new Error('토큰이 없습니다');
-                }
-
                 let response;
                 if (isSocialLogin) {
+                    // Get token from sessionStorage or localStorage
+                    const accessToken = location.state?.accessToken;
+                    if (!accessToken) {
+                        throw new Error('토큰이 없습니다');
+                    }
+
                     response = await axios.post(
                         'http://localhost:5001/auth/kakao/signup',
                         { nickname: formData.nickname },
                         {
                             headers: {
-                                Authorization: `Bearer ${token}`,
+                                Authorization: `Bearer ${accessToken}`,
                                 'Content-Type': 'application/json'
                             }
                         }
                     );
-                // if (isSocialLogin) {
-                //     response = await authApi.kakaoSignup(formData.nickname);
-                } else {
-                    response = await authApi.signup(formData);
-                }
+                    if (response.status === 201) {
+                        // Get user info after successful signup
+                        const userResponse = await axios.get('http://localhost:5001/auth/me', {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        });
 
-                if (response.status === 201) {
+                        // Set user data in store
+                        setUser(userResponse.data);
+                        
+                        alert("회원가입이 완료되었습니다!");
+                        navigate(ROUTE_PATHS.MAIN);
+                    }
+                } else {
+                    // 일반 회원가입
+                    response = await axios.post('http://localhost:5001/auth/signup', formData);
+                    
+                    // 응답에서 토큰과 사용자 정보 저장
+                    const { accessToken, refreshToken } = response.data;
+                    sessionStorage.setItem('accessToken', accessToken);
+                    sessionStorage.setItem('refreshToken', refreshToken);
+                    // sessionStorage.setItem('user', JSON.stringify(user));
+
                     alert("회원가입이 완료되었습니다!");
                     navigate("/main");
                 }
@@ -92,7 +108,7 @@ export default function Onboarding() {
                 navigate("/login");
             }
         } else {
-            // 소셜 로그인인 경우 EMAIL과 PASSWORD 스텝 건너뛰기
+            // 다음 스텝으로 이동하는 로직은 그대로 유지
             if (isSocialLogin) {
                 if (step === STEPS.NICKNAME) {
                     setStep(STEPS.COMPLETE);
@@ -102,7 +118,6 @@ export default function Onboarding() {
             }
         }
     };
-
     // 이메일 중복 체크
     const handleIdCheck = async () => {
         try {

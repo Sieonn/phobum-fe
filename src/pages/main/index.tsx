@@ -9,7 +9,7 @@ export function Main() {
 
   // 회원 탈퇴 처리
   const handleDelete = async () => {
-    const token = localStorage.getItem('token'); // 로컬 스토리지에서 토큰 가져오기
+    const token = sessionStorage.getItem('refreshToken'); // 로컬 스토리지에서 토큰 가져오기
     if (!token) {
       alert('로그인이 필요합니다!');
       return;
@@ -25,7 +25,7 @@ export function Main() {
 
       if (response.status === 200) {
         // 탈퇴 성공 시 로컬 스토리지에서 토큰 삭제하고, 로그인 페이지로 리다이렉트
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
         alert('회원 탈퇴가 완료되었습니다.');
       }
     } catch (error) {
@@ -36,7 +36,7 @@ export function Main() {
 
   // 로그아웃 처리
   const handleLogout = () => {
-    localStorage.removeItem('token'); // 로컬 스토리지에서 토큰 삭제
+    sessionStorage.removeItem('token'); // 로컬 스토리지에서 토큰 삭제
     alert('로그아웃 되었습니다.');
   };
 

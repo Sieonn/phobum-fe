@@ -6,6 +6,7 @@ import { GlobalStyle } from './styles/global-style';
 import { Login } from './pages/login';
 import Onboarding from './pages/onboarding';
 import { Main } from './pages/main';
+import ImageUpload from './pages/image-upload';
 function App() {
   return (
   <QueryProvider>
@@ -17,6 +18,7 @@ function App() {
       <Route path="/login" element={<Login/>}/>
       <Route path="/onboarding" element={<Onboarding/>}/>
       <Route path="/main" element={<Main/>}/>
+      <Route path="/make-card" element={<ImageUpload/>}/>
     </Routes>
     </BrowserRouter>
   </QueryProvider>

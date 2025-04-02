@@ -10,8 +10,10 @@ import { ROUTE_PATHS } from "../../constants/routes";
 import axios from "axios";
 import { useState } from "react";
 import {PatchAuthLogin} from "../../types/user";
+import { useStore } from "../../store/store";
 
 export function Login() {
+    const setUser = useStore((state) => state.setUser);
     const navigate = useNavigate();
     const handleSignup = () => { 
         navigate(ROUTE_PATHS.ONBOARDING)
@@ -33,6 +35,8 @@ export function Login() {
                 // TODO: 로그인 성공 후 메인 페이지로 이동
                 navigate(ROUTE_PATHS.MAIN);
             }
+            setUser(response.data);
+            console.log(setUser);
         } catch (error) {
             console.error('Login failed:', error);
             alert('로그인에 실패했습니다.');

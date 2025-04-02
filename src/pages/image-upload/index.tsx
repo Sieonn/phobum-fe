@@ -6,11 +6,14 @@ import { Layout } from "../../components/layout";
 import { Text } from "../../components/text";
 import Form from "./componets/form";
 import { Container, ImgaeUpload, UploadContainer } from "./index.styled";
+import { useStore } from "../../store/store";
 
 export default function ImageUpload() {
     const [file, setFile] = useState<File | null>(null);  // 상태 타입을 File | null로 설정
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);  // 미리보기 URL 상태 타입 설정
 
+    const user = useStore();
+    console.log(user)
     // e의 타입을 React.ChangeEvent<HTMLInputElement>로 명시
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files ? e.target.files[0] : null;  // 파일이 없으면 null로 처리
@@ -29,8 +32,8 @@ export default function ImageUpload() {
         <Layout>
             <AppBar type="default" />
             <Container>
-                <Text typo="title200">나만의 카드 만들기</Text>
-                <section>
+                <Text typo="subtitle100">나만의 카드 만들기</Text>
+                <section style={{width: '100%'}}>
                     <UploadContainer>
                         <ImgaeUpload>
                             {/* input을 숨기고, label을 클릭하면 파일 선택 창이 열리게 함 */}

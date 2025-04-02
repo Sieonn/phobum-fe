@@ -3,9 +3,10 @@ import theme from '../../styles/theme';
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  width: 100%;
+  width: 480px;
   min-width: ${theme.size.minWidth};
-  max-width: ${theme.size.maxWidth};
+  /* max-width: ${theme.size.maxWidth}; */
+  /* min-height: 100vh; */
   height: 100vh;
   margin: 0 auto;
   overscroll-behavior-y: auto;

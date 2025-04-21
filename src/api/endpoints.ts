@@ -5,4 +5,15 @@ export const AUTH = {
     CHECK_EMAIL: '/auth/check-email',
     CHECK_NICKNAME: '/auth/check-nickname',
     ME: '/auth/me',
-  } as const;
+} as const;
+  
+// api/endpoints.ts
+export const IMAGES = {
+  UPLOAD: '/api/images',  // '/api' prefix 추가
+  LIST: '/api/images',
+  DETAIL: (id: string) => `/api/images/${id}`,
+  UPDATE: (id: string) => `/api/images/${id}`,
+  DELETE: (id: string) => `/api/images/${id}`,
+  LIKE: (id: string) => `/api/images/${id}/like`,
+  UNLIKE: (id: string) => `/api/images/${id}/like`
+};

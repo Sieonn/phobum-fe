@@ -1,0 +1,26 @@
+// api/images/types.ts
+export interface ImageUploadRequest {
+  image: File;
+  title: string;
+  description: string;
+}
+
+export interface ImageResponse {
+  id: string;
+  image_url: string;
+  title: string;
+  description: string;
+  user_id: string;
+  created_at: string;
+  likes_count: number;
+  is_liked: boolean;
+  users: {
+      nickname: string;
+  };
+}
+
+export interface ImageUpdateRequest {
+  image?: File;
+  title?: string;
+  description?: string;
+}

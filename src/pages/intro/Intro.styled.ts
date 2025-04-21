@@ -38,7 +38,6 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin: auto;
   gap: 10px;
   align-items: center;
   justify-content: center;

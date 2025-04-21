@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PlusIcon } from "./index.styled";  // Plus 아이콘 import
+import { PlusIcon } from "./index.styled";
 import { AppBar } from "../../components/app-bar";
 import { Button } from "../../components/button";
 import { Layout } from "../../components/layout";
@@ -7,24 +7,71 @@ import { Text } from "../../components/text";
 import Form from "./componets/form";
 import { Container, ImgaeUpload, UploadContainer } from "./index.styled";
 import { useStore } from "../../store/store";
+import { imagesApi } from "../../api/images";
+import { ImageUploadRequest } from "../../api/images/types";
 
 export default function ImageUpload() {
-    const [file, setFile] = useState<File | null>(null);  // 상태 타입을 File | null로 설정
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);  // 미리보기 URL 상태 타입 설정
+    const [file, setFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [formData, setFormData] = useState({
+        title: "",
+        description: "",
+        author: ""
+    });
 
     const user = useStore();
-    console.log(user)
-    // e의 타입을 React.ChangeEvent<HTMLInputElement>로 명시
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files ? e.target.files[0] : null;  // 파일이 없으면 null로 처리
+        const selectedFile = e.target.files ? e.target.files[0] : null;
 
         if (selectedFile) {
-            setFile(selectedFile);  // 파일이 있을 때만 상태를 업데이트
-            const preview = URL.createObjectURL(selectedFile);  // 미리보기 URL 생성
+            setFile(selectedFile);
+            const preview = URL.createObjectURL(selectedFile);
             setPreviewUrl(preview);
         } else {
-            setFile(null);  // 파일이 없으면 상태를 null로 초기화
-            setPreviewUrl(null);  // 미리보기도 초기화
+            setFile(null);
+            setPreviewUrl(null);
+        }
+    };
+
+    const handleFormChange = (data: { title: string; description: string; author: string }) => {
+        setFormData(data);
+    };
+
+    const handleSubmit = async () => {
+        if (!file) {
+            alert('이미지를 선택해주세요.');
+            return;
+        }
+    
+        if (!formData.title || !formData.description) {
+            alert('제목과 설명을 입력해주세요.');
+            return;
+        }
+    
+        try {
+            const imageData: ImageUploadRequest = {
+                image: file,
+                title: formData.title,
+                description: formData.description
+            };
+    
+            const response = await imagesApi.upload(imageData);
+            console.log('이미지 업로드 성공:', response.data);
+            
+            // 성공 후 초기화
+            setFile(null);
+            setPreviewUrl(null);
+            setFormData({
+                title: "",
+                description: "",
+                author: ""
+            });
+            
+            alert('이미지가 성공적으로 업로드되었습니다.');
+        } catch (error) {
+            console.error('이미지 업로드 실패:', error);
+            alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
         }
     };
 
@@ -36,24 +83,22 @@ export default function ImageUpload() {
                 <section style={{width: '100%'}}>
                     <UploadContainer>
                         <ImgaeUpload>
-                            {/* input을 숨기고, label을 클릭하면 파일 선택 창이 열리게 함 */}
                             <input
                                 type="file"
                                 onChange={handleFileChange}
-                                style={{ display: 'none' }}  // 기본 input 숨기기
-                                id="file-input"  // 파일 선택 input의 id
+                                style={{ display: 'none' }}
+                                id="file-input"
+                                accept="image/*"
                             />
-                            {/* label을 클릭하면 input의 파일 선택 창이 열리게 처리 */}
                             <label htmlFor="file-input">
-                                {/* 이미지가 있으면 이미지 표시, 없으면 Plus 아이콘 표시 */}
                                 {previewUrl ? (
                                     <img
                                         src={previewUrl}
                                         alt="미리보기 이미지"
                                         style={{
-                                            width: '100%',  // 이미지를 ImgaeUpload 크기만큼 맞추기
+                                            width: '100%',
                                             height: '100%',
-                                            objectFit: 'cover',  // 비율 유지하며 잘림 방지
+                                            objectFit: 'cover',
                                             cursor:'pointer',
                                         }}
                                     />
@@ -65,9 +110,9 @@ export default function ImageUpload() {
                     </UploadContainer>
                 </section>
                 <section>
-                    <Form />
+                    <Form onChange={handleFormChange} initialData={formData} />
                 </section>
-                <Button>제작하기</Button>
+                <Button onClick={handleSubmit}>제작하기</Button>
             </Container>
         </Layout>
     );

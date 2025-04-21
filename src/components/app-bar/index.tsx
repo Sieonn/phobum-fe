@@ -17,7 +17,7 @@ function DefaultAppBar(){
         <AppBarStyled>
             <Home width={45} onClick={() => hadleNaviagte(ROUTE_PATHS.INTRO)}/>
             <Logo width={90} />
-            <Grid width={45}/>
+            <Grid width={45} onClick={() => hadleNaviagte(ROUTE_PATHS.ALBUM)}/>
     </AppBarStyled>
     )
 }

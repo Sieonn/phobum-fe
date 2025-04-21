@@ -7,20 +7,21 @@ export const authApi = {
     api.post(AUTH.SIGNUP, data),
 
   kakaoSignup: (nickname: string) => 
-    api.post(AUTH.KAKAO_SIGNUP, { nickname },),
+    api.post(AUTH.KAKAO_SIGNUP, { nickname }),
 
   checkEmail: (data: CheckEmailRequest) =>
-    api.post(AUTH.CHECK_EMAIL, data),
+    api.get(`${AUTH.CHECK_EMAIL}/${data.email}`),
 
+  // 변경된 부분
   checkNickname: (data: CheckNicknameRequest) =>
-    api.post(AUTH.CHECK_NICKNAME, data),
+    api.get(`${AUTH.CHECK_NICKNAME}/${data.nickname}`),
 
   getMe: () => 
     api.get(AUTH.ME),
 
-    login: (data: LoginRequest) => 
+  login: (data: LoginRequest) => 
     api.post(AUTH.LOGIN, data),
 
-    delete: () =>
+  delete: () =>
     api.delete(AUTH.ME),
 };

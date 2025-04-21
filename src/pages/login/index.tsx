@@ -30,19 +30,26 @@ export function Login() {
                 email: formData.email,
                 password: formData.password,
             });
+    
             if (response.status === 200) {
+                // ✅ 토큰 저장
+                const { accessToken, refreshToken, ...userData } = response.data;
+    
+                sessionStorage.setItem("accessToken", accessToken);
+                sessionStorage.setItem("refreshToken", refreshToken);
+    
+                // ✅ 유저 상태 저장
+                setUser(userData);
+    
                 alert("로그인이 완료되었습니다!");
-                // TODO: 로그인 성공 후 메인 페이지로 이동
                 navigate(ROUTE_PATHS.MAIN);
             }
-            setUser(response.data);
-            console.log(setUser);
         } catch (error) {
             console.error('Login failed:', error);
             alert('로그인에 실패했습니다.');
         }
     };
-
+    
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof PatchAuthLogin) => {
         console.log('Input Change:', field, e.target.value);
         setFormData(prev => {

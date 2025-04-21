@@ -3,5 +3,6 @@ export const ROUTE_PATHS = {
     MAIN:'/main',
     ONBOARDING: '/onboarding',
     LOGIN_SUCCESS:'/login/success',
-    INTRO:'/',
+    INTRO: '/',
+    ALBUM: '/album',
 } as const;

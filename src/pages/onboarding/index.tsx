@@ -132,6 +132,7 @@ export default function Onboarding() {
             }
         } catch (error) {
             setEmailError("중복된 아이디예요ㅠ_ㅠ");
+            console.error("이메일 중복 확인 오류:", error);
             setEmailAvailable(false);
         }
     };

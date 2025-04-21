@@ -3,10 +3,12 @@ import { Button } from "../../components/button";
 import { Layout } from "../../components/layout";
 import { Container } from "../intro/Intro.styled";
 import axios from 'axios';
-import { authApi } from "../../api/auth";
+import { useStore } from "../../store/store";
+
 
 export function Main() {
-
+  const user = useStore((state) => state.user);
+  console.log('현재 유저 상태:', user);
   // 회원 탈퇴 처리
   const handleDelete = async () => {
     const token = sessionStorage.getItem('refreshToken'); // 로컬 스토리지에서 토큰 가져오기
@@ -36,7 +38,9 @@ export function Main() {
 
   // 로그아웃 처리
   const handleLogout = () => {
-    sessionStorage.removeItem('token'); // 로컬 스토리지에서 토큰 삭제
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('accessToken');
+
     alert('로그아웃 되었습니다.');
   };
 
@@ -45,6 +49,7 @@ export function Main() {
       <AppBar type="default" />
       <Container>
         {/* <h1>Main</h1> */}
+        <h1>{user?.nickname}어서오세요</h1>
         <Button onClick={handleLogout}>로그아웃</Button>
         <Button onClick={handleDelete}>회원 탈퇴</Button>
       </Container>

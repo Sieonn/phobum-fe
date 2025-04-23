@@ -19,7 +19,7 @@ export function Main() {
 
     try {
       // 탈퇴 요청을 보낼 때 Authorization 헤더에 Bearer 토큰 추가
-      const response = await axios.delete('http://localhost:5001/auth/me', {
+      const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

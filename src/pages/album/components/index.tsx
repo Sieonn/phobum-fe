@@ -10,7 +10,7 @@ export function InteractiveCard({ image }: Props) {
   const shineRef = useRef<HTMLDivElement>(null);
   const prismRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleInteraction = (clientX: number, clientY: number) => {
     const card = cardRef.current;
     const shine = shineRef.current;
     const prism = prismRef.current;
@@ -18,19 +18,28 @@ export function InteractiveCard({ image }: Props) {
     if (!card || !shine || !prism) return;
 
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
     const rotateY = -1 / 10 * x + 20;
     const rotateX = 4 / 40 * y - 20;
 
     card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
     shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.25), rgba(255,255,255,0.05) 30%, transparent 60%)`;
     prism.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px, rgba(255, 0, 150, 0.2), rgba(0, 255, 255, 0.2), rgba(255, 255, 0, 0.2), rgba(255, 0, 150, 0.2))`;
     prism.style.opacity = "1";
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleInteraction(e.clientX, e.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // 스크롤 방지
+    const touch = e.touches[0];
+    handleInteraction(touch.clientX, touch.clientY);
+  };
+
+  const resetStyles = () => {
     const card = cardRef.current;
     const shine = shineRef.current;
     const prism = prismRef.current;
@@ -46,7 +55,10 @@ export function InteractiveCard({ image }: Props) {
         ref={cardRef}
         style={styles.imageWrapper}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={resetStyles}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={resetStyles}
+        onTouchCancel={resetStyles}
       >
         <img src={image.image_url} alt={image.title} style={styles.image} />
         <div ref={shineRef} style={styles.shine}></div>

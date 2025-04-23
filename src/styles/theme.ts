@@ -4,7 +4,7 @@ import { typography } from './typography';
 const theme = {
   colors,
   size: {
-    minWidth: '320px',
+    minWidth: '300px',
     maxWidth: '480px',
     appBarHeight: '72px',
     radius: '30px',

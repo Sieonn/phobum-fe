@@ -7,11 +7,13 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: auto;
-    padding: 20px;
+    /* padding-top: 20px; */
     align-items: center;
     justify-content: center;
     width: 100%;
     gap: 15px;
+    overflow-y: scroll;
+    z-index: 1;
 `;
 
 export const UploadContainer = styled.div`
@@ -32,7 +34,6 @@ export const UploadContainer = styled.div`
 export const ImgaeUpload = styled.div`  
     position: absolute;
     background-color: ${colors.gray300};
-    z-index: 10;
     width: 80%;
     height: 80%;
     border-radius: 10px;
@@ -40,7 +41,7 @@ export const ImgaeUpload = styled.div`
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
+    overflow: hidden;  // 추가: 이미지가 컨테이너를 벗어나지 않도록
 `;
 
 export const PlusIcon  = styled(Plus)`

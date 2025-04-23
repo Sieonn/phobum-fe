@@ -4,11 +4,11 @@ export const Wrapper = styled.header`
   position: absolute;
   top: 0;
   margin: 0 auto;
-
+padding: 0 20px;
   z-index: ${theme.zIndex.appBar};
   width: 100%;
   height: ${theme.size.appBarHeight};
-  max-width: calc(${theme.size.maxWidth} - 50px);
+  max-width: ${theme.size.maxWidth};//calc(${theme.size.maxWidth} - 50px);
   display: flex;
   align-items: center;
   justify-content: space-between;

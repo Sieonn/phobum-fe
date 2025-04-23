@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { tokenStorage } from '../utils/tokenStorage';
-const BASE_URL = 'http://localhost:5001';
+const BASE_URL = process.env.REACT_APP_API_BASE_URL; // Use environment variable for base URL
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -60,7 +60,7 @@ api.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        const response = await axios.post('http://localhost:5001/auth/refresh', {
+        const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/refresh`, {
           refreshToken,
         });
 

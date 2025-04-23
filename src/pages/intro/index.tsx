@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Intro() {
   const navigate = useNavigate();
   const handleKakaoLogin = () => {
-    window.location.href = 'http://localhost:5001/auth/kakao';
+    window.location.href = `${process.env.REACT_APP_API_BASE_URL}/auth/kakao`;
   };
 
   const handleLocalLogin = () => {

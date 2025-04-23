@@ -66,7 +66,7 @@ export default function Onboarding() {
                     }
 
                     response = await axios.post(
-                        'http://localhost:5001/auth/kakao/signup',
+                        `${process.env.REACT_APP_API_BASE_URL}/auth/kakao/signup`,
                         { nickname: formData.nickname },
                         {
                             headers: {
@@ -77,7 +77,7 @@ export default function Onboarding() {
                     );
                     if (response.status === 201) {
                         // Get user info after successful signup
-                        const userResponse = await axios.get('http://localhost:5001/auth/me', {
+                        const userResponse = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/auth/me`, {
                             headers: {
                                 Authorization: `Bearer ${accessToken}`
                             }
@@ -91,7 +91,7 @@ export default function Onboarding() {
                     }
                 } else {
                     // 일반 회원가입
-                    response = await axios.post('http://localhost:5001/auth/signup', formData);
+                    response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/signup`, formData);
                     
                     // 응답에서 토큰과 사용자 정보 저장
                     const { accessToken, refreshToken } = response.data;

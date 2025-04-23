@@ -27,8 +27,8 @@ export default function Album() {
   return (
     <Layout>
       <AppBar type="default" />
-      <h1>Album</h1>
-      <p>Welcome to the album page!</p>
+      {/* <h1>Album</h1>
+      <p>Welcome to the album page!</p> */}
       <div style={styles.imageGrid}>
         {images.map((image) => (
           <InteractiveCard key={image.id} image={image} />

@@ -15,7 +15,7 @@ const LoginButton = styled.button`
 
 const KakaoLogin = () => {
   const handleLogin = () => {
-    window.location.href = 'http://localhost:5001/auth/kakao';
+    window.location.href = `${process.env.REACT_APP_API_BASE_URL}/auth/kakao`;
   };
 
   return (

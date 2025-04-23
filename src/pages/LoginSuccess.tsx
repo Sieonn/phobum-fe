@@ -76,7 +76,7 @@ export default function LoginSuccess() {
         tokenStorage.setRefreshToken(refreshToken);
         // ✅ 유저 정보 불러오기
         const { data } = await axios.get<User>(
-          `http://localhost:5001/auth/me`, // 👈 유저 정보 API 필요
+          `${process.env.REACT_APP_API_BASE_URL}/auth/me`, // 👈 유저 정보 API 필요
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

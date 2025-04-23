@@ -90,7 +90,16 @@ export default function ImageUpload() {
                                 id="file-input"
                                 accept="image/*"
                             />
-                            <label htmlFor="file-input">
+                            <label 
+                                htmlFor="file-input"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+                            >
                                 {previewUrl ? (
                                     <img
                                         src={previewUrl}
@@ -99,7 +108,7 @@ export default function ImageUpload() {
                                             width: '100%',
                                             height: '100%',
                                             objectFit: 'cover',
-                                            cursor:'pointer',
+                                            borderRadius: '10px',
                                         }}
                                     />
                                 ) : (

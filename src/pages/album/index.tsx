@@ -3,6 +3,7 @@ import { ImageResponse, imagesApi } from "../../api/images";
 import { AppBar } from "../../components/app-bar";
 import { Layout } from "../../components/layout";
 import { InteractiveCard } from "./components";
+import styled from "styled-components";
 
 export default function Album() {
   const [images, setImages] = useState<ImageResponse[]>([]);
@@ -29,20 +30,21 @@ export default function Album() {
       <AppBar type="default" />
       {/* <h1>Album</h1>
       <p>Welcome to the album page!</p> */}
-      <div style={styles.imageGrid}>
+      <Container>
         {images.map((image) => (
           <InteractiveCard key={image.id} image={image} />
         ))}
-      </div>
+      </Container>
     </Layout>
   );
 }
 
-const styles = {
-  imageGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-    gap: "16px",
-    marginTop: "20px",
-  },
-};
+
+export const Container = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+  padding: 0px 20px;
+  overflow-y: scroll;
+`;

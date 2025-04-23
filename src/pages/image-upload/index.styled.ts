@@ -7,13 +7,13 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     margin: auto;
-    /* padding-top: 20px; */
+    padding: 20px 25px 0px;
     align-items: center;
     justify-content: center;
     width: 100%;
     gap: 15px;
     overflow-y: scroll;
-    z-index: 1;
+    z-index: 100;
 `;
 
 export const UploadContainer = styled.div`

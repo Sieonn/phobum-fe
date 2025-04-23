@@ -26,7 +26,7 @@ export function Login() {
 
     const handleLocalLogin = async () => {
         try {
-            const response = await axios.post(`${process.env.BASE_URLREACT_APP_API_BASE_URL}/auth/login`, {
+            const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, {
                 email: formData.email,
                 password: formData.password,
             });

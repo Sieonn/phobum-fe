@@ -118,10 +118,10 @@ export default function ImageUpload() {
                         </ImgaeUpload>
                     </UploadContainer>
                 </section>
-                <section>
+                <section style={{width: '100%'}}>
                     <Form onChange={handleFormChange} initialData={formData} />
                 </section>
-                <Button onClick={handleSubmit}>제작하기</Button>
+                <Button fullWidth  onClick={handleSubmit}>제작하기</Button>
             </Container>
         </Layout>
     );

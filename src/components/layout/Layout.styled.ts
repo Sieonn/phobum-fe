@@ -5,7 +5,7 @@ import styled from 'styled-components';
 export const Wrapper = styled.div`
   width: 100dvw;
   height: 100dvh;
-  min-width: ${theme.size.maxWidth};
+  min-width: ${theme.size.minWidth};
   max-width: ${theme.size.maxWidth}; 
   margin: 0 auto;
   overscroll-behavior-y: auto;

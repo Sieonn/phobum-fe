@@ -8,8 +8,8 @@ export const GlobalStyle = createGlobalStyle`
     font-family: 'Galmuri9', 'Galmuri11', '-apple-system', 'BlinkMacSystemFont', 'system-ui',
       'Roboto', 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
       'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'sans-serif';
-    width: 100vw;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
     color: ${theme.colors.white};
     /* background-color: ${theme.colors.black}; */
   }

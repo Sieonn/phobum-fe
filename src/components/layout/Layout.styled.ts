@@ -11,6 +11,7 @@ export const Wrapper = styled.div`
   overscroll-behavior-y: auto;
   background-color: ${colors.black};
   margin: auto;
+  position: relative;
 `;
 
 export const Main = styled.div`

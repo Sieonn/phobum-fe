@@ -4,6 +4,7 @@ import { AppBar } from "../../components/app-bar";
 import { Layout } from "../../components/layout";
 import { InteractiveCard } from "./components";
 import styled from "styled-components";
+import FloatingButton from "../../components/fab";
 
 export default function Album() {
   const [images, setImages] = useState<ImageResponse[]>([]);
@@ -34,6 +35,7 @@ export default function Album() {
         {images.map((image) => (
           <InteractiveCard key={image.id} image={image} />
         ))}
+              <FloatingButton />
       </Container>
     </Layout>
   );

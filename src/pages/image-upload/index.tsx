@@ -42,7 +42,42 @@ export default function ImageUpload() {
     const handleFormChange = (data: { title: string; description: string; author: string }) => {
         setFormData(data);
     };
+
     const isFormValid = formData.title !== '' && formData.description !== '';
+
+    // ✅ WebP 변환 함수
+    const convertToWebP = (file: File): Promise<File> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const webpFile = new File([blob], file.name.replace(/\.[^.]+$/, ".webp"), {
+                                type: "image/webp",
+                            });
+                            resolve(webpFile);
+                        } else {
+                            reject(new Error("WebP 변환 실패"));
+                        }
+                    }, "image/webp", 0.8);
+                };
+                img.src = event.target?.result as string;
+            };
+
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    };
 
     const handleSubmit = async () => {
         if (!file) {
@@ -56,8 +91,11 @@ export default function ImageUpload() {
         }
     
         try {
+            // ✅ 파일을 WebP로 변환
+            const webpFile = await convertToWebP(file);
+
             const imageData: ImageUploadRequest = {
-                image: file,
+                image: webpFile,
                 title: formData.title,
                 description: formData.description
             };
@@ -85,11 +123,10 @@ export default function ImageUpload() {
         <Layout>
             <AppBar type="default" />
             <Container>
-                <TextStyled style={{ fontSize: '1.25rem', fontWeight: '500' }}>나만의 <span style={{color:`${colors.neon100}`}}>
-                    카드
-                </span>
-                    만들기</TextStyled>
-                <section style={{width: '100%'}}>
+                <TextStyled style={{ fontSize: '1.25rem', fontWeight: '500' }}>
+                    나만의 <span style={{ color: `${colors.neon100}` }}>카드</span> 만들기
+                </TextStyled>
+                <section style={{ width: '100%' }}>
                     <UploadContainer>
                         <ImgaeUpload>
                             <input
@@ -99,14 +136,15 @@ export default function ImageUpload() {
                                 id="file-input"
                                 accept="image/*"
                             />
-                            <label 
+                            <label
                                 htmlFor="file-input"
                                 style={{
                                     width: '100%',
                                     height: '100%',
                                     display: 'flex',
                                     justifyContent: 'center',
-                                    alignItems: 'center', cursor:"pointer"
+                                    alignItems: 'center',
+                                    cursor: "pointer"
                                 }}
                             >
                                 {previewUrl ? (
@@ -121,17 +159,17 @@ export default function ImageUpload() {
                                         }}
                                     />
                                 ) : (
-                                    <PlusIcon width={65}  />
+                                    <PlusIcon width={65} />
                                 )}
                             </label>
                         </ImgaeUpload>
                     </UploadContainer>
                 </section>
-                <section style={{width: '100%'}}>
+                <section style={{ width: '100%' }}>
                     <Form onChange={handleFormChange} initialData={formData} />
                 </section>
             </Container>
-                <Gnb onClick={handleSubmit} name="제작하기" status={isFormValid?'active':'default'}/>
+            <Gnb onClick={handleSubmit} name="제작하기" status={isFormValid ? 'active' : 'default'} />
         </Layout>
     );
 }

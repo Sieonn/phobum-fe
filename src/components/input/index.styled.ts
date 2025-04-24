@@ -13,7 +13,7 @@ export const InputStyled = styled.input<{ state: 'default' | 'error' }>`
   display: flex;
   width: 100%;
   height: 50px;
-  padding: 0px 25px;
+  padding: 0px 20px;
   font-size: 14px;
   background-color: ${colors.gray300};
   outline: none;
@@ -65,7 +65,7 @@ export const Label = styled.label<{ focused: boolean, state: 'default' | 'error'
 export const Message = styled.div<{ state: 'default' | 'error' }>`
   font-size: 10px;
   font-family: 'Galmuri11';
-  margin-left: 20px;
+  margin-left: 10px;
   margin-top: 5px;
   color: ${({ state }) => (state === "default" ? colors.neon100 : colors.red100)};
 `;

@@ -11,6 +11,7 @@ import { imagesApi } from "../../api/images";
 import { ImageUploadRequest } from "../../api/images/types";
 import { useNavigate } from "react-router-dom";
 import Gnb from "../../components/gnb";
+import { Image2 } from "../../assets/svg";
 
 export default function ImageUpload() {
     const [file, setFile] = useState<File | null>(null);
@@ -116,7 +117,7 @@ export default function ImageUpload() {
                                         }}
                                     />
                                 ) : (
-                                    <PlusIcon width={80} />
+                                    <Image2 width={65} />
                                 )}
                             </label>
                         </ImgaeUpload>

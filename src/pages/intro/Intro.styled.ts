@@ -44,3 +44,7 @@ export const Container = styled.div`
   margin: auto;
   padding: 0 25px;
 `;
+
+export const TextStyled = styled.div`
+  font-size: 0.75rem;
+`;

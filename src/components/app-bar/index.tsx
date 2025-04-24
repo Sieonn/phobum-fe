@@ -1,8 +1,9 @@
 import { Wrapper,AppBarStyled } from "./index.styled";
-import { Backicon } from "../../assets/svg";
+import { Backicon, Phobum2, Screen2 } from "../../assets/svg";
 import { Logo, Home, Grid } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "../../constants/routes";
+import SvgHome2 from "../../assets/svg/Home2";
 type AppBarProps = {
     type: 'default' | 'back';
 };
@@ -15,9 +16,9 @@ function DefaultAppBar(){
     } 
     return(
         <AppBarStyled>
-            <Home width={45} onClick={() => hadleNaviagte(ROUTE_PATHS.INTRO)}/>
-            <Logo width={90} />
-            <Grid width={45} onClick={() => hadleNaviagte(ROUTE_PATHS.ALBUM)}/>
+            <SvgHome2 width={35} onClick={() => hadleNaviagte(ROUTE_PATHS.INTRO)}/>
+            <Phobum2 width={100} />
+            <Screen2 width={35} onClick={() => hadleNaviagte(ROUTE_PATHS.ALBUM)}/>
     </AppBarStyled>
     )
 }

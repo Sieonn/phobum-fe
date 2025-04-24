@@ -103,6 +103,7 @@ const styles = {
   },
   imageWrapper: {
     width: "100%",
+    maxWidth: "212px",
     aspectRatio: "1 / 1.15",
     backgroundColor: `${colors.gray400}`,
     display: "flex",

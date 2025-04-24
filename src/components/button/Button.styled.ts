@@ -7,19 +7,20 @@ interface WrapperProps {
   status: ButtonStatus;
   fullWidth: boolean;
   size: ButtonSize;
-  state : State;
+  state: State;
+  radius?: string;
 }
 
 // box 함수 스타일을 함수형으로 작성
-const box = ({ fullWidth, size, state }: WrapperProps) => css`
+const box = ({ fullWidth, size, state, radius }: WrapperProps) => css`
   padding: 15px 25px;
-  border-radius: 30px;
+  border-radius: ${radius ? radius : '30px'};
   cursor: pointer;
 
   ${size === 's' &&
   css`
     position: absolute;
-    right: 10px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     padding: 10px 20px;

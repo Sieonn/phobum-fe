@@ -14,3 +14,9 @@ export const Container = styled.div`
     flex-direction: column;
     gap: 15px;
 `;
+
+export const TextStyled = styled.div`
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-bottom: 5px;
+`;

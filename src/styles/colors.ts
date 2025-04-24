@@ -14,6 +14,8 @@ export const colors = {
 
   neonShadow: '#20BF72',
 
-  neon100: '#A7FE89',
-  neon200: '#7BBC65',
+  // neon100: '#A7FE89',
+  // neon200: '#7BBC65',
+  neon100: '#4FD08F',
+  neon200: '#43B17A',
 } as const;

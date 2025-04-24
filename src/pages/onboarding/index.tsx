@@ -4,7 +4,7 @@ import { AppBar } from "../../components/app-bar";
 import { Text } from "../../components/text";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
-import { Wrapper, Container } from "./index.styled";
+import { Wrapper, Container, TextStyled } from "./index.styled";
 import { PatchAuthOnboardingBody } from "../../types/user";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -48,10 +48,29 @@ export default function Onboarding() {
             nickname: "",
         };
     }); // 입력 데이터를 관리
+
+
     const [emailError, setEmailError] = useState<string>(""); // 이메일 중복 에러
     const [nicknameError, setNicknameError] = useState<string>(""); // 닉네임 중복 에러
     const [emailAvailable, setEmailAvailable] = useState<boolean>(true); // 이메일 사용 가능 여부
     const [nicknameAvailable, setNicknameAvailable] = useState<boolean>(true); // 닉네임 사용 가능 여부
+// 컴포넌트 내 상태 아래에 추가
+const isFormValid = (() => {
+    if (step === STEPS.EMAIL) {
+        return formData.email !== "" && emailAvailable && emailError === "사용가능한 아이디예요";
+    }
+    if (step === STEPS.PASSWORD) {
+        return formData.password !== "";
+    }
+    if (step === STEPS.NICKNAME) {
+        return formData.nickname !== "" && nicknameAvailable && nicknameError === "사용가능한 닉네임이에요";
+    }
+    if (step === STEPS.COMPLETE) {
+        return true;
+    }
+    return false;
+})();
+
 
     const navigate = useNavigate();
     const handleNextStep = async () => {
@@ -100,7 +119,8 @@ export default function Onboarding() {
                     // sessionStorage.setItem('user', JSON.stringify(user));
 
                     alert("회원가입이 완료되었습니다!");
-                    navigate("/main");
+                    navigate(ROUTE_PATHS.MAIN);
+                    
                 }
             } catch (error) {
                 console.error("회원가입 오류:", error);
@@ -155,17 +175,27 @@ export default function Onboarding() {
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof PatchAuthOnboardingBody) => {
-    
-        setFormData(prev => {
-            const newData = {
-                ...prev,
-                [field]: e.target.value
-            };
-    
-            return newData;
-        });
-    };
+
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof PatchAuthOnboardingBody) => {
+    const value = e.target.value;
+
+    setFormData(prev => ({
+        ...prev,
+        [field]: value
+    }));
+
+    // 중복 검사 관련 상태 초기화
+    if (field === "email") {
+        setEmailAvailable(false);
+        setEmailError(""); // 혹은 초기 안내 메시지로 "아이디를 입력하세요." 도 가능
+    }
+
+    if (field === "nickname") {
+        setNicknameAvailable(false);
+        setNicknameError(""); // 마찬가지로 초기 메시지 가능
+    }
+};
+
 
     // 각 스텝별 메시지를 설정
     const getMessageForStep = () => {
@@ -189,7 +219,7 @@ export default function Onboarding() {
                     {/* 소셜 로그인이 아닐 때만 이메일/패스워드 스텝 표시 */}
                     {!isSocialLogin && step === STEPS.EMAIL && (
                         <>
-                            <Text typo="title200">아이디를 입력해주세요</Text>
+                            <TextStyled>아이디를 입력해주세요</TextStyled>
                             <Input
                                 label="아이디"
                                 state={emailError && !emailAvailable ? "error" : "default"}
@@ -204,6 +234,7 @@ export default function Onboarding() {
                                         state={emailError && !emailAvailable ? "error" : "default"}
                                         onClick={handleIdCheck}
                                         disabled={!formData.email} // 이메일이 비어있으면 버튼 비활성화
+                                        radius="8px"
                                     >
                                         중복검사
                                     </Button>
@@ -213,7 +244,7 @@ export default function Onboarding() {
                     )}
                     {!isSocialLogin && step === STEPS.PASSWORD && (
                         <>
-                            <Text typo="title200">비밀번호를 입력해주세요</Text>
+                            <TextStyled>비밀번호를 입력해주세요</TextStyled>
                             <Input
                                 label="비밀번호"
                                 state="default"
@@ -226,7 +257,7 @@ export default function Onboarding() {
                     )}
                     {step === STEPS.NICKNAME && (
                         <>
-                            <Text typo="title200">닉네임을 입력해주세요</Text>
+                            <TextStyled>닉네임을 입력해주세요</TextStyled>
                             <Input
                                 label="닉네임"
                                 state={nicknameError && !nicknameAvailable ? "error" : "default"}
@@ -239,6 +270,7 @@ export default function Onboarding() {
                                         state={nicknameError && !nicknameAvailable ? "error" : "default"}
                                         onClick={handleNicknameCheck}
                                         disabled={!formData.nickname} // 닉네임이 비어있으면 버튼 비활성화
+                                        radius="8px"
                                     >
                                         중복검사
                                     </Button>
@@ -261,6 +293,7 @@ export default function Onboarding() {
                         (!isSocialLogin && step === STEPS.EMAIL && !emailAvailable) ||
                         (step === STEPS.NICKNAME && !nicknameAvailable)
                     }
+                    status={isFormValid?'active':'default'}
                 >
                     {step === STEPS.COMPLETE ? "확인" : "다음"} {/* 마지막 스텝에서는 확인 버튼 */}
                 </Button>

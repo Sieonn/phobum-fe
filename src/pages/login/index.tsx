@@ -1,7 +1,7 @@
 import { Layout } from "../../components/layout";
 import { AppBar } from "../../components/app-bar";
 import { Container } from "./index.styled";
-import { Logo } from "../../assets/svg";
+import {  Logo2 } from "../../assets/svg";
 import { Text } from "../../components/text";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
@@ -10,7 +10,9 @@ import { ROUTE_PATHS } from "../../constants/routes";
 import axios from "axios";
 import { useState } from "react";
 import {PatchAuthLogin} from "../../types/user";
-import { useStore } from "../../store/store";
+import { User, useStore } from "../../store/store";
+import { tokenStorage } from "../../utils/tokenStorage";
+import { TextStyled } from "../intro/Intro.styled";
 
 export function Login() {
     const setUser = useStore((state) => state.setUser);
@@ -33,16 +35,31 @@ export function Login() {
     
             if (response.status === 200) {
                 // ✅ 토큰 저장
-                const { accessToken, refreshToken, ...userData } = response.data;
+                const { accessToken, refreshToken } = response.data;
+                tokenStorage.setAccessToken(accessToken);
+                tokenStorage.setRefreshToken(refreshToken);
     
-                sessionStorage.setItem("accessToken", accessToken);
-                sessionStorage.setItem("refreshToken", refreshToken);
+                try {
+                    // ✅ 유저 정보 불러오기
+                    const { data: userData } = await axios.get<User>(
+                        `${process.env.REACT_APP_API_BASE_URL}/auth/me`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                        }
+                    );
     
-                // ✅ 유저 상태 저장
-                setUser(userData);
+                    // ✅ Zustand에 유저 정보 저장
+                    setUser(userData);
+                    console.log("로그인 성공", userData);
     
-                alert("로그인이 완료되었습니다!");
-                navigate(ROUTE_PATHS.MAIN);
+                    alert("로그인이 완료되었습니다!");
+                    navigate(ROUTE_PATHS.MAIN, { replace: true });
+                } catch (error) {
+                    console.error('Failed to fetch user data:', error);
+                    alert('사용자 정보를 가져오는데 실패했습니다.');
+                }
             }
         } catch (error) {
             console.error('Login failed:', error);
@@ -67,10 +84,10 @@ export function Login() {
             <AppBar type="back" />
             <Container>
                 <div style={{display:'flex',flexDirection:'column', alignItems:'center', gap:'10px'}}>
-                    <Logo width={150} />
-                    <Text typo="title300">
+                    <Logo2 width={150} />
+                    <TextStyled>
                         포범에서 나만의 포토카드 만들고 기록해보세요.
-                    </Text>
+                    </TextStyled>
                 </div>
                 <div style={{display:'flex',width:'100%',flexDirection:'column',gap:'10px'}}>
                     <Input 
@@ -87,7 +104,7 @@ export function Login() {
                 </div>
                 <div style={{display:'flex',width:'100%', flexDirection:'column', alignItems:'center', gap:'5px'}}>
                     <Button fullWidth onClick={handleLocalLogin}>로그인</Button>
-                    <div style={{display:'flex',width:'100%', justifyContent:'right', marginRight:'20px', cursor:'pointer'}}>
+                    <div style={{display:'flex',width:'100%', justifyContent:'right', marginRight:'20px', cursor:'pointer', marginTop:'7px'}}>
                         <Text typo="body100" onClick={handleSignup}>회원가입</Text>
                     </div>
                 </div>

@@ -9,12 +9,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   fullWidth?: boolean;
   children: ReactNode;
-  state? : State;
+  state?: State;
+  radius?: string;
 }
 
-export function Button({ status = 'default', size = 'l', fullWidth = false, state = 'default' ,children, ...props }: ButtonProps) {
+export function Button({ status = 'default', size = 'l', fullWidth = false, state = 'default',radius ,children, ...props }: ButtonProps) {
   return (
-    <Wrapper status={status} size={size} fullWidth={fullWidth} state={state} {...props}>
+    <Wrapper status={status} size={size} fullWidth={fullWidth} state={state} radius={radius} {...props}>
         {children}
     </Wrapper>
   );

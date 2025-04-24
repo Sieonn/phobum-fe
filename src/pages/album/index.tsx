@@ -5,10 +5,12 @@ import { Layout } from "../../components/layout";
 import { InteractiveCard } from "./components";
 import styled from "styled-components";
 import FloatingButton from "../../components/fab";
+import { Text } from "../../components/text";
 
 export default function Album() {
   const [images, setImages] = useState<ImageResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -17,6 +19,8 @@ export default function Album() {
         setImages(response.data);
       } catch (err: any) {
         setError("이미지 목록을 가져오는 데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -24,23 +28,31 @@ export default function Album() {
   }, []);
 
   if (error) return <div>{error}</div>;
-  if (!images.length) return <div>로딩 중...</div>;
+  if (loading) return <div>로딩 중...</div>;
 
   return (
     <Layout>
       <AppBar type="default" />
-      {/* <h1>Album</h1>
-      <p>Welcome to the album page!</p> */}
       <Container>
-        {images.map((image) => (
-          <InteractiveCard key={image.id} image={image} />
-        ))}
-              <FloatingButton />
+        {images.length === 0 ? (
+          <EmptyState>
+            <Text typo="subtitle100">
+              아직 만든 카드가 없어요!
+            </Text>
+            <Text typo="body100" >
+              하단의 + 버튼을 눌러 첫 번째 카드를 만들어보세요
+            </Text>
+          </EmptyState>
+        ) : (
+          images.map((image) => (
+            <InteractiveCard key={image.id} image={image} />
+          ))
+        )}
+        <FloatingButton />
       </Container>
     </Layout>
   );
 }
-
 
 export const Container = styled.div`
   display: grid;
@@ -49,4 +61,16 @@ export const Container = styled.div`
   margin-top: 20px;
   padding: 0px 20px;
   overflow-y: scroll;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 12px;
+  text-align: center;
+  width: 100%;
+  grid-column: 1 / -1;  // grid 전체 너비를 차지하도록
 `;

@@ -9,6 +9,7 @@ import { Container, ImgaeUpload, UploadContainer } from "./index.styled";
 import { useStore } from "../../store/store";
 import { imagesApi } from "../../api/images";
 import { ImageUploadRequest } from "../../api/images/types";
+import { useNavigate } from "react-router-dom";
 
 export default function ImageUpload() {
     const [file, setFile] = useState<File | null>(null);
@@ -20,6 +21,7 @@ export default function ImageUpload() {
     });
 
     const user = useStore();
+    const navigate = useNavigate();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files ? e.target.files[0] : null;
@@ -57,7 +59,6 @@ export default function ImageUpload() {
             };
     
             const response = await imagesApi.upload(imageData);
-            console.log('이미지 업로드 성공:', response.data);
             
             // 성공 후 초기화
             setFile(null);
@@ -69,6 +70,7 @@ export default function ImageUpload() {
             });
             
             alert('이미지가 성공적으로 업로드되었습니다.');
+            navigate('/album');
         } catch (error) {
             console.error('이미지 업로드 실패:', error);
             alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
@@ -112,7 +114,7 @@ export default function ImageUpload() {
                                         }}
                                     />
                                 ) : (
-                                    <PlusIcon width={90} />
+                                    <PlusIcon width={80} />
                                 )}
                             </label>
                         </ImgaeUpload>

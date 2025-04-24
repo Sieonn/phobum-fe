@@ -8,7 +8,7 @@ import { useStore } from "../../store/store";
 
 export function Main() {
   const user = useStore((state) => state.user);
-  console.log('현재 유저 상태:', user);
+
   // 회원 탈퇴 처리
   const handleDelete = async () => {
     const token = sessionStorage.getItem('refreshToken'); // 로컬 스토리지에서 토큰 가져오기

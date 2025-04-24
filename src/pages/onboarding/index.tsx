@@ -156,13 +156,13 @@ export default function Onboarding() {
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof PatchAuthOnboardingBody) => {
-        console.log('Input Change:', field, e.target.value); // 디버깅용 로그 추가
+    
         setFormData(prev => {
             const newData = {
                 ...prev,
                 [field]: e.target.value
             };
-            console.log('Updated formData:', newData); // 디버깅용 로그 추가
+    
             return newData;
         });
     };
@@ -194,8 +194,7 @@ export default function Onboarding() {
                                 label="아이디"
                                 state={emailError && !emailAvailable ? "error" : "default"}
                                 value={formData.email}
-                               onChange={(e) => {
-        console.log('Email Change:', e.target.value); // 디버깅용 로그 추가
+                               onChange={(e) => { 
         handleInputChange(e, "email");
       }}
                                 message={getMessageForStep()}

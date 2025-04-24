@@ -39,12 +39,12 @@ export default function Form({ onChange, initialData }: FormProps) {
                 onChange={(e) => handleChange(e, "description")} 
                 placeholder="설명을 입력해주세요."
             />
-            <Input2 
+            {/* <Input2 
                 label="작성자" 
                 value={formData.author}
                 onChange={(e) => handleChange(e, "author")} 
                 placeholder="작성자"
-            />
+            /> */}
         </Container>
     );
 }

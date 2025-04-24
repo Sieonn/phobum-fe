@@ -14,7 +14,7 @@ export const InputStyled = styled.input<{ state: 'default' | 'error' }>`
   width: 100%;
   height: 50px;
   padding: 0px 25px;
-  font-size: 14px;
+  font-size: 0.9rem;
   background-color: ${colors.gray300};
   outline: none;
   border-radius: ${theme.size.radius};
@@ -22,7 +22,9 @@ export const InputStyled = styled.input<{ state: 'default' | 'error' }>`
   border: 1px solid ${colors.gray300}; /* 기본 border 색상 */
   position: relative; /* 포지셔닝을 제대로 하기 위해 필요 */
   transition: border-color 0.3s ease;
-
+  &&::placeholder{
+    font-size: 0.7rem;
+  }
   &:focus {
     border-color: ${({ state }) => (state === "default" ? colors.neon100 : colors.red100)};
   }

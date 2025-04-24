@@ -51,13 +51,13 @@ export function Login() {
     };
     
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof PatchAuthLogin) => {
-        console.log('Input Change:', field, e.target.value);
+
         setFormData(prev => {
             const newData = {
                 ...prev,
                 [field]: e.target.value
             };
-            console.log('Updated formData:', newData);
+
             return newData;
         });
     };

@@ -98,7 +98,7 @@ export function InteractiveCard({ image }: Props) {
 const styles = {
   imageItem: {
     display: "flex",
-    justifyContent: "center",
+    // justifyContent: "center",
     alignItems: "center",
   },
   imageWrapper: {
@@ -118,7 +118,7 @@ const styles = {
   image: {
     width: "100%",
     height: "100%",
-    objectFit: "contain" as const,
+    objectFit: "cover" as const,
     pointerEvents: "none" as const,
   },
   shine: {

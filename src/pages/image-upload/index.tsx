@@ -11,21 +11,20 @@ import { imagesApi } from "../../api/images";
 import { ImageUploadRequest } from "../../api/images/types";
 import { useNavigate } from "react-router-dom";
 import Gnb from "../../components/gnb";
-import { Image2 } from "../../assets/svg";
 import { TextStyled } from "../intro/Intro.styled";
 import { colors } from "../../styles/colors";
 
 export default function ImageUpload() {
+    const user = useStore();
+    const navigate = useNavigate();
+    
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        author: ""
+        author: user?.user?.nickname || "",
     });
-
-    const user = useStore();
-    const navigate = useNavigate();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files ? e.target.files[0] : null;
@@ -122,7 +121,7 @@ export default function ImageUpload() {
                                         }}
                                     />
                                 ) : (
-                                    <Image2 width={65}  />
+                                    <PlusIcon width={65}  />
                                 )}
                             </label>
                         </ImgaeUpload>

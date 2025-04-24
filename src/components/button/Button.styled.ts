@@ -16,7 +16,8 @@ const box = ({ fullWidth, size, state, radius }: WrapperProps) => css`
   padding: 15px 25px;
   border-radius: ${radius ? radius : '30px'};
   cursor: pointer;
-  letter-spacing: 0.1rem;
+
+  
 
   ${size === 's' &&
   css`
@@ -30,7 +31,6 @@ const box = ({ fullWidth, size, state, radius }: WrapperProps) => css`
     background-color: ${state === 'default' ? `${colors.neon100}` : `${colors.red100}`};
     border: none;
     font-weight: 500;
-    letter-spacing: 0;
   `}
   
   ${fullWidth &&

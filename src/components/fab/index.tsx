@@ -11,7 +11,7 @@ const Fab = styled.button`
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background-color: #4FD08F;
+  background-color: ${colors.neon100};
   color: white;
   border: none;
   display: flex;

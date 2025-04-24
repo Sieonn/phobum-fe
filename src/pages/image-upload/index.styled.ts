@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { colors } from "../../styles/colors";
-import { Plus } from "../../assets/svg";
+import { Image2, Plus } from "../../assets/svg";
 import theme from "../../styles/theme";
 
 export const Container = styled.div`
@@ -17,9 +17,13 @@ export const Container = styled.div`
 export const UploadContainer = styled.div`
     background-color: ${colors.gray400};
     border-radius: 15px;
-    width: 50%;
+    width: 220px;
+    min-width: 200px;
+    max-width: 40dvw;
     margin: 0 auto;
-    height: 40dvh;
+    height: 280px;
+    min-height: 260px;
+    max-height: 40dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,10 +45,11 @@ export const ImgaeUpload = styled.div`
     overflow: hidden;  // 추가: 이미지가 컨테이너를 벗어나지 않도록
 `;
 
-export const PlusIcon  = styled(Plus)`
+export const PlusIcon  = styled(Image2)`
     transition:  transform 0.3s ease;
+    width: 38%;
     cursor: pointer;
     &:hover{
-        transform: scale(1.04);
+        transform: scale(1.05);
     }
 `

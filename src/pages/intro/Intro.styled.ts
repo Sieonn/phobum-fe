@@ -47,4 +47,5 @@ export const Container = styled.div`
 
 export const TextStyled = styled.div`
   font-size: 0.75rem;
+  font-family: 'Galmuri11';
 `;

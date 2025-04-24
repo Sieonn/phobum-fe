@@ -19,4 +19,5 @@ export const TextStyled = styled.div`
     font-size: 1.25rem;
     font-weight: 400;
     margin-bottom: 5px;
+    font-family: 'Galmuri11';
 `;

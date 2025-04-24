@@ -24,13 +24,13 @@ export default function Intro() {
         </PicktureWrapper>
         <KakaoBtn onClick={handleKakaoLogin}>
           <KakaoLogo width={25} />
-          <TextStyled style={{color: 'black', fontSize:'1rem'}}>
+          <TextStyled style={{color: '#392020', fontSize:'1rem', fontWeight:'600'}}>
           카카오로 시작하기
           </TextStyled>
         </KakaoBtn>
-        <Text typo='body100' onClick={handleLocalLogin}>
+        <TextStyled onClick={handleLocalLogin}>
         이미 아이디가 있으신가요?
-        </Text>
+        </TextStyled>
       </Container>
     </Layout>
   );

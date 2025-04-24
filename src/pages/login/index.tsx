@@ -105,7 +105,7 @@ export function Login() {
                 <div style={{display:'flex',width:'100%', flexDirection:'column', alignItems:'center', gap:'5px'}}>
                     <Button fullWidth onClick={handleLocalLogin}>로그인</Button>
                     <div style={{display:'flex',width:'100%', justifyContent:'right', marginRight:'20px', cursor:'pointer', marginTop:'7px'}}>
-                        <Text typo="body100" onClick={handleSignup}>회원가입</Text>
+                        <TextStyled onClick={handleSignup}>회원가입</TextStyled>
                     </div>
                 </div>
             </Container>

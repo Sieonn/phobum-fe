@@ -2,7 +2,7 @@ import { Layout } from '../../components/layout';
 import { Text } from "../../components/text";
 // import { Button } from '@/components/button';
 import { KakaoLogo,Logo,Logo2,Picture } from '../../assets/svg';
-import { KakaoBtn, PicktureWrapper,Container, TextStyled } from './Intro.styled';
+import { KakaoBtn, PicktureWrapper,Container, TextStyled, TextStyled2 } from './Intro.styled';
 import { useNavigate } from 'react-router-dom';
 export default function Intro() {
   const navigate = useNavigate();
@@ -28,9 +28,9 @@ export default function Intro() {
           카카오로 시작하기
           </TextStyled>
         </KakaoBtn>
-        <TextStyled onClick={handleLocalLogin}>
+        <TextStyled2 onClick={handleLocalLogin} style={{cursor:'pointer'}}>
         이미 아이디가 있으신가요?
-        </TextStyled>
+        </TextStyled2>
       </Container>
     </Layout>
   );

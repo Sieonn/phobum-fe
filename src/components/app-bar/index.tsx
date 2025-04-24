@@ -16,9 +16,9 @@ function DefaultAppBar(){
     } 
     return(
         <AppBarStyled>
-            <SvgHome2 width={35} onClick={() => hadleNaviagte(ROUTE_PATHS.INTRO)}/>
+            <SvgHome2 width={35} onClick={() => hadleNaviagte(ROUTE_PATHS.INTRO)} style={{cursor:'pointer'}}/>
             <Phobum2 width={100} />
-            <Screen2 width={35} onClick={() => hadleNaviagte(ROUTE_PATHS.ALBUM)}/>
+            <Screen2 width={35} onClick={() => hadleNaviagte(ROUTE_PATHS.ALBUM)} style={{cursor:'pointer'}}/>
     </AppBarStyled>
     )
 }
@@ -29,7 +29,7 @@ export function AppBar({ type }: AppBarProps) {
     }
     return (
         <Wrapper>
-            {type === 'back' ? <Backicon width={12} onClick={handleBack} /> : <DefaultAppBar/>}
+            {type === 'back' ? <Backicon width={12} onClick={handleBack} style={{cursor:'pointer'}}/> : <DefaultAppBar/>}
         </Wrapper>
     );
 }

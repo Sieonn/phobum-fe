@@ -6,6 +6,8 @@ import { InteractiveCard } from "./components";
 import styled from "styled-components";
 import FloatingButton from "../../components/fab";
 import { Text } from "../../components/text";
+import { TextStyled } from "../intro/Intro.styled";
+import { colors } from "../../styles/colors";
 
 export default function Album() {
   const [images, setImages] = useState<ImageResponse[]>([]);
@@ -36,12 +38,12 @@ export default function Album() {
       <Container>
         {images.length === 0 ? (
           <EmptyState>
-            <Text typo="subtitle100">
-              아직 만든 카드가 없어요!
-            </Text>
-            <Text typo="body100" >
-              하단의 + 버튼을 눌러 첫 번째 카드를 만들어보세요
-            </Text>
+            <TextStyled style={{fontSize:'1.25rem', fontWeight:'600'}}>
+              아직 만든 <span style={{color:`${colors.neon100}`}}>카드</span>가 없어요!
+            </TextStyled>
+            <TextStyled >
+              하단의 <span style={{color:`${colors.neon100}`}}>+</span> 버튼을 눌러 첫 번째 카드를 만들어보세요
+            </TextStyled>
           </EmptyState>
         ) : (
           images.map((image) => (

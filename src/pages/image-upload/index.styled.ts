@@ -6,7 +6,7 @@ import theme from "../../styles/theme";
 export const Container = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 20px 25px 50px 25px;
+    padding: 10px 25px 50px 25px;
     align-items: center;
     width: 100%;
     gap: 15px;
@@ -43,7 +43,7 @@ export const ImgaeUpload = styled.div`
 
 export const PlusIcon  = styled(Plus)`
     transition:  transform 0.3s ease;
-
+    cursor: pointer;
     &:hover{
         transform: scale(1.04);
     }

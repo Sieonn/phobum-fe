@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { colors } from "../../styles/colors";
 
 export const KakaoBtn = styled.button`
   color: #000;
@@ -6,7 +7,7 @@ export const KakaoBtn = styled.button`
   background-color: #fee500;
   height: 50px;
   border-radius: 50px;
-  margin-top: 20px;
+  margin-top: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,4 +49,9 @@ export const Container = styled.div`
 export const TextStyled = styled.div`
   font-size: 0.75rem;
   font-family: 'Galmuri11';
+`;
+export const TextStyled2 = styled(TextStyled)`
+  &:hover{
+    color: ${colors.neon100};
+  }
 `;

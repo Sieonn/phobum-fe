@@ -12,6 +12,8 @@ import { ImageUploadRequest } from "../../api/images/types";
 import { useNavigate } from "react-router-dom";
 import Gnb from "../../components/gnb";
 import { Image2 } from "../../assets/svg";
+import { TextStyled } from "../intro/Intro.styled";
+import { colors } from "../../styles/colors";
 
 export default function ImageUpload() {
     const [file, setFile] = useState<File | null>(null);
@@ -84,7 +86,10 @@ export default function ImageUpload() {
         <Layout>
             <AppBar type="default" />
             <Container>
-                <Text typo="subtitle100">나만의 카드 만들기</Text>
+                <TextStyled style={{ fontSize: '1.25rem', fontWeight: '500' }}>나만의 <span style={{color:`${colors.neon100}`}}>
+                    카드
+                </span>
+                    만들기</TextStyled>
                 <section style={{width: '100%'}}>
                     <UploadContainer>
                         <ImgaeUpload>
@@ -102,7 +107,7 @@ export default function ImageUpload() {
                                     height: '100%',
                                     display: 'flex',
                                     justifyContent: 'center',
-                                    alignItems: 'center'
+                                    alignItems: 'center', cursor:"pointer"
                                 }}
                             >
                                 {previewUrl ? (
@@ -117,7 +122,7 @@ export default function ImageUpload() {
                                         }}
                                     />
                                 ) : (
-                                    <Image2 width={65} />
+                                    <Image2 width={65}  />
                                 )}
                             </label>
                         </ImgaeUpload>

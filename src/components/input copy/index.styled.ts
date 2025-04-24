@@ -46,7 +46,7 @@ export const InputStyled = styled.input.attrs((props: any) => ({
 
   &:read-only {
   background-color: ${colors.gray300};
-  color: ${colors.gray200};
+  color: ${colors.neon100};
   cursor: not-allowed;
 }
 `;

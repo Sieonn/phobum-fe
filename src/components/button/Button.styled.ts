@@ -16,6 +16,7 @@ const box = ({ fullWidth, size, state, radius }: WrapperProps) => css`
   padding: 15px 25px;
   border-radius: ${radius ? radius : '30px'};
   cursor: pointer;
+  letter-spacing: 0.1rem;
 
   ${size === 's' &&
   css`
@@ -28,6 +29,8 @@ const box = ({ fullWidth, size, state, radius }: WrapperProps) => css`
     color: black;
     background-color: ${state === 'default' ? `${colors.neon100}` : `${colors.red100}`};
     border: none;
+    font-weight: 500;
+    letter-spacing: 0;
   `}
   
   ${fullWidth &&
@@ -40,7 +43,8 @@ export const Wrapper = styled.button<WrapperProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
 
 
   ${props => {

@@ -3,13 +3,15 @@ import { useState, InputHTMLAttributes, ReactNode } from 'react';
 import { Button } from '../button';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix' | 'suffix'> {
-  state?: 'default' | 'error';
+  state?: 'default' | 'error' ;
   prefix?: ReactNode;
   suffix?: ReactNode;
   label: string;
   message?: string;
   value: string;
+  type?: 'default' | 'textarea';
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
 }
 
 export function Input2({
@@ -20,6 +22,8 @@ export function Input2({
   state = 'default',
   value,
   onChange,
+  type = 'default',
+  disabled = false,
   ...props
 }: InputProps) {
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -41,9 +45,12 @@ export function Input2({
           onChange={onChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          type={type}
+          disabled={disabled}
+          readOnly={disabled} 
           required
         />
-        <Label focused={shouldLabelBeUp} state={state}>
+        <Label focused={shouldLabelBeUp} state={state} type={type}>
           {label}
         </Label>
         {suffix && <Suffix>{suffix}</Suffix>}

@@ -12,7 +12,7 @@ function DefaultAppBar(){
 
     const hadleNaviagte=(path: string)=>{
         navigate(path);
-    }
+    } 
     return(
         <AppBarStyled>
             <Home width={45} onClick={() => hadleNaviagte(ROUTE_PATHS.INTRO)}/>
@@ -23,9 +23,12 @@ function DefaultAppBar(){
 }
 
 export function AppBar({ type }: AppBarProps) {
+    const handleBack = () =>{
+        window.history.back();
+    }
     return (
         <Wrapper>
-            {type === 'back' ? <Backicon width={12} /> : <DefaultAppBar/>}
+            {type === 'back' ? <Backicon width={12} onClick={handleBack} /> : <DefaultAppBar/>}
         </Wrapper>
     );
 }

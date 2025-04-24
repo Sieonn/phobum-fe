@@ -1,6 +1,6 @@
 export const ROUTE_PATHS = {
     LOGIN: '/login',
-    MAIN:'/main',
+    MAIN:'/album',
     ONBOARDING: '/onboarding',
     LOGIN_SUCCESS:'/login/success',
     INTRO: '/',

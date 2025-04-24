@@ -15,6 +15,7 @@ interface FormProps {
 
 export default function Form({ onChange, initialData }: FormProps) {
     const [formData, setFormData] = useState(initialData);
+    const user = useStore(); // ✅ 유저 정보 가져오기
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof typeof formData) => {
         const newData = {
@@ -38,13 +39,14 @@ export default function Form({ onChange, initialData }: FormProps) {
                 value={formData.description} 
                 onChange={(e) => handleChange(e, "description")} 
                 placeholder="설명을 입력해주세요."
+                type="textarea"
             />
-            {/* <Input2 
-                label="작성자" 
-                value={formData.author}
-                onChange={(e) => handleChange(e, "author")} 
-                placeholder="작성자"
-            /> */}
+            <Input2 
+                label="작성자"
+                value={user?.user?.nickname || ''} // ✅ 여기!
+                disabled={true}
+                readOnly={true}
+            />
         </Container>
     );
 }

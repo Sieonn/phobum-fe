@@ -6,10 +6,8 @@ import theme from "../../styles/theme";
 export const Container = styled.div`
     display: flex;
     flex-direction: column;
-    margin: auto;
-    padding: 20px 25px 0px;
+    padding: 20px 25px 50px 25px;
     align-items: center;
-    justify-content: center;
     width: 100%;
     gap: 15px;
     overflow-y: scroll;
@@ -19,10 +17,9 @@ export const Container = styled.div`
 export const UploadContainer = styled.div`
     background-color: ${colors.gray400};
     border-radius: 15px;
-    width: 60%;
-    /* width: 280px; */
+    width: 50%;
     margin: 0 auto;
-    height: 300px;
+    height: 40dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -35,7 +32,7 @@ export const ImgaeUpload = styled.div`
     position: absolute;
     background-color: ${colors.gray300};
     width: 80%;
-    height: 80%;
+    height: 85%;
     border-radius: 10px;
     display: flex;
     align-items: center;

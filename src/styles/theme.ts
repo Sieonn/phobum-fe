@@ -7,7 +7,7 @@ const theme = {
     minWidth: '300px',
     maxWidth: '480px',
     appBarHeight: '72px',
-    radius: '30px',
+    radius: '10px',
   },
   zIndex: {
     overlay: 5,

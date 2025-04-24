@@ -10,6 +10,7 @@ import { useStore } from "../../store/store";
 import { imagesApi } from "../../api/images";
 import { ImageUploadRequest } from "../../api/images/types";
 import { useNavigate } from "react-router-dom";
+import Gnb from "../../components/gnb";
 
 export default function ImageUpload() {
     const [file, setFile] = useState<File | null>(null);
@@ -39,6 +40,7 @@ export default function ImageUpload() {
     const handleFormChange = (data: { title: string; description: string; author: string }) => {
         setFormData(data);
     };
+    const isFormValid = formData.title !== '' && formData.description !== '';
 
     const handleSubmit = async () => {
         if (!file) {
@@ -123,8 +125,8 @@ export default function ImageUpload() {
                 <section style={{width: '100%'}}>
                     <Form onChange={handleFormChange} initialData={formData} />
                 </section>
-                <Button fullWidth  onClick={handleSubmit}>제작하기</Button>
             </Container>
+                <Gnb onClick={handleSubmit} name="제작하기" status={isFormValid?'active':'default'}/>
         </Layout>
     );
 }

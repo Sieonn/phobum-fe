@@ -9,62 +9,85 @@ export const InputWrapper = styled.div`
   flex-direction: column;
 `;
 
-export const InputStyled = styled.input<{ state: 'default' | 'error' }>`
-  display: flex;
+export const InputStyled = styled.input.attrs((props: any) => ({
+  as: props.type === 'textarea' ? 'textarea' : 'input',
+}))<{ state: 'default' | 'error'; type: 'default' | 'textarea' }>`
   width: 100%;
-  height: 50px;
-  padding: 0px 25px;
   font-size: 0.9rem;
   background-color: ${colors.gray300};
   outline: none;
   border-radius: ${theme.size.radius};
   color: #fff;
-  border: 1px solid ${colors.gray300}; /* 기본 border 색상 */
-  position: relative; /* 포지셔닝을 제대로 하기 위해 필요 */
+  border: 1px solid ${colors.gray300};
   transition: border-color 0.3s ease;
+
+  padding: ${({ type }) => (type === 'textarea' ? '20px' : '0px 20px')};
+  height: ${({ type }) => (type === 'textarea' ? '20dvh' : '50px')};
+  resize: none;
+  line-height: 1.5;
+  z-index: 1;
+
   &&::placeholder{
-    font-size: 0.7rem;
-  }
-  &:focus {
-    border-color: ${({ state }) => (state === "default" ? colors.neon100 : colors.red100)};
-  }
+     font-size: 0.7rem;
+     ${({ type }) =>
+     type === 'textarea' &&
+     `
+      transform: translateY(-30%);
+       align-self: flex-start;
+       text-align: start;
+    `}
+   }   &:focus {
+     border-color: ${({ state }) => (state === "default" ? colors.neon100 : colors.red100)};
+   }
 
   &:focus + label {
     color: ${({ state }) => (state === "default" ? colors.neon100 : colors.red100)};
   }
+
+  &:read-only {
+  background-color: ${colors.gray300};
+  color: ${colors.gray200};
+  cursor: not-allowed;
+}
 `;
 
-export const Label = styled.label<{ focused: boolean, state: 'default' | 'error' }>`
+
+export const Label = styled.label<{
+  focused: boolean;
+  state: 'default' | 'error';
+  type: 'default' | 'textarea';
+}>`
   position: absolute;
   left: 25px;
-  top: 50%;
+  top: ${({ type }) => (type === 'textarea' ? '10%' : '50%')};
   transform: translateY(-50%);
   font-size: 14px;
   color: ${colors.gray200};
   pointer-events: none;
   transition: all 0.3s ease;
   opacity: 0;
+  background-color: transparent;
+  //${colors.gray300}; 
 
   &:before {
     content: '';
     position: absolute;
     left: 0;
-    top: 50%;
+    top: 50%;//${({ type }) => (type === 'textarea' ? '10%' : '50%')};
     width: 100%;
     height: 2px;
     background-color: ${colors.gray300};
     z-index: -1;
   }
 
-  ${({ focused }) =>
-    focused &&
-    `
+  ${({ focused }) => focused && `
       opacity: 1;
       top: 0;
       font-size: 12px;
       z-index: 2; 
-    `}
+  `}
 `;
+
 
 export const Message = styled.div<{ state: 'default' | 'error' }>`
   font-size: 10px;

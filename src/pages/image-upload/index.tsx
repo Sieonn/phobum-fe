@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { PlusIcon } from "./index.styled";
 import { AppBar } from "../../components/app-bar";
-import { Button } from "../../components/button";
 import { Layout } from "../../components/layout";
-import { Text } from "../../components/text";
 import Form from "./componets/form";
 import { Container, ImgaeUpload, UploadContainer } from "./index.styled";
 import { useStore } from "../../store/store";
@@ -17,7 +15,8 @@ import { colors } from "../../styles/colors";
 export default function ImageUpload() {
     const user = useStore();
     const navigate = useNavigate();
-    
+
+    const [isUploading, setIsUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [formData, setFormData] = useState({
@@ -27,13 +26,14 @@ export default function ImageUpload() {
     });
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files ? e.target.files[0] : null;
+        const selectedFile = e.target.files?.[0] ?? null;
 
         if (selectedFile) {
             setFile(selectedFile);
             const preview = URL.createObjectURL(selectedFile);
             setPreviewUrl(preview);
         } else {
+            //파일 선택 취소소
             setFile(null);
             setPreviewUrl(null);
         }
@@ -84,6 +84,8 @@ export default function ImageUpload() {
     };
 
     const handleSubmit = async () => {
+        if (isUploading) return; //중복 클릭 방지
+
         if (!file) {
             alert('이미지를 선택해주세요.');
             return;
@@ -95,6 +97,8 @@ export default function ImageUpload() {
         }
     
         try {
+            setIsUploading(true);
+
             // ✅ 파일을 WebP로 변환
             const webpFile = await convertToWebP(file);
 
@@ -120,6 +124,9 @@ export default function ImageUpload() {
         } catch (error) {
             console.error('이미지 업로드 실패:', error);
             alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            setIsUploading(false);
+
         }
     };
 
@@ -138,7 +145,7 @@ export default function ImageUpload() {
                                 onChange={handleFileChange}
                                 style={{ display: 'none' }}
                                 id="file-input"
-                                accept="image/*"
+                                accept="image/*,.webp"
                             />
                             <label
                                 htmlFor="file-input"
@@ -173,7 +180,7 @@ export default function ImageUpload() {
                     <Form onChange={handleFormChange} initialData={formData} />
                 </section>
             </Container>
-            <Gnb onClick={handleSubmit} name="제작하기" status={isFormValid ? 'active' : 'default'} />
+            <Gnb onClick={handleSubmit} name={isUploading ?"업로드 중...":"제작하기"} status={isFormValid && !isUploading ? 'active' : 'default'} />
         </Layout>
     );
 }

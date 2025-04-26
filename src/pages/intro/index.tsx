@@ -1,7 +1,5 @@
 import { Layout } from '../../components/layout';
-import { Text } from "../../components/text";
-// import { Button } from '@/components/button';
-import { KakaoLogo,Logo,Logo2,Picture } from '../../assets/svg';
+import { KakaoLogo,Logo2,Picture } from '../../assets/svg';
 import { KakaoBtn, PicktureWrapper,Container, TextStyled, TextStyled2 } from './Intro.styled';
 import { useNavigate } from 'react-router-dom';
 export default function Intro() {
@@ -16,8 +14,6 @@ export default function Intro() {
   return (
     <Layout>
       <Container>
-        <TextStyled>나만의 포토카드 앨범⭐</TextStyled>
-        {/* <Logo width={170} /> */}
         <Logo2  width={170}/>
         <PicktureWrapper>
           <Picture width={150} style={{ marginTop: '30px' }} />

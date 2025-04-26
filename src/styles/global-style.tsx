@@ -1,4 +1,4 @@
-import { css ,createGlobalStyle} from 'styled-components';
+import { createGlobalStyle} from 'styled-components';
 import theme from './theme';
 import './normalize.css';
 import './fonts.css';

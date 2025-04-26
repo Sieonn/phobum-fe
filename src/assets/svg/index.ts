@@ -6,6 +6,7 @@ export { default as Image2 } from "./Image2";
 export { default as KakaoLogo } from "./KakaoLogo";
 export { default as Logo } from "./Logo";
 export { default as Logo2 } from "./Logo2";
+export { default as More } from "./More";
 export { default as Phobum2 } from "./Phobum2";
 export { default as Picture } from "./Picture";
 export { default as Plus } from "./Plus";

@@ -5,4 +5,5 @@ export const ROUTE_PATHS = {
     LOGIN_SUCCESS:'/login/success',
     INTRO: '/',
     ALBUM: '/album',
+    Detail: '/album/:id',
 } as const;

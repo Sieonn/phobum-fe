@@ -5,14 +5,19 @@ import { Layout } from "../../components/layout";
 import { InteractiveCard } from "./components";
 import styled from "styled-components";
 import FloatingButton from "../../components/fab";
-import { Text } from "../../components/text";
 import { TextStyled } from "../intro/Intro.styled";
 import { colors } from "../../styles/colors";
+import { PatchCard } from "../../types/card";
+import CardDetail from "./components/card-detail";
+
 
 export default function Album() {
   const [images, setImages] = useState<ImageResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<ImageResponse | null>(null); // ⭐ 선택된 이미지
+  const [isDetailOpen, setIsDetailOpen] = useState(false); // ⭐ 모달 열림 여부
+
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -28,6 +33,16 @@ export default function Album() {
 
     fetchImages();
   }, []);
+
+  const handleCardClick = (image: ImageResponse) => {
+    setSelectedImage(image);  // 클릭된 이미지 데이터 저장
+    setIsDetailOpen(true);    // 모달 열기
+  };
+
+  const closeDetail = () => {
+    setIsDetailOpen(false);   // 모달 닫기
+    setSelectedImage(null);   // 선택된 이미지 초기화
+  };
 
   if (error) return <div>{error}</div>;
   if (loading) return <div>로딩 중...</div>;
@@ -47,10 +62,20 @@ export default function Album() {
           </EmptyState>
         ) : (
           images.map((image) => (
-            <InteractiveCard key={image.id} image={image} />
+            <InteractiveCard 
+              key={image.id} 
+              image={image} 
+              onClick={() => handleCardClick(image)}  // 클릭 핸들러 전달
+            />
           ))
         )}
         <FloatingButton />
+        {isDetailOpen && selectedImage && (
+          <CardDetail 
+            image={selectedImage}  // 선택된 이미지 데이터 전달
+            onClose={closeDetail} 
+          />
+        )}
       </Container>
     </Layout>
   );

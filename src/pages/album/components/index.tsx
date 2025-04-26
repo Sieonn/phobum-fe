@@ -4,32 +4,45 @@ import { colors } from "../../../styles/colors";
 
 interface Props {
   image: ImageResponse;
+  onClick?: () => void;
+  isSelected?: boolean
 }
 
-export function InteractiveCard({ image }: Props) {
+export function InteractiveCard({ image, onClick, isSelected=false }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const shineRef = useRef<HTMLDivElement>(null);
   const prismRef = useRef<HTMLDivElement>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const frame = useRef<number>(0);
 
   const handleInteraction = (clientX: number, clientY: number) => {
-    const card = cardRef.current;
-    const shine = shineRef.current;
-    const prism = prismRef.current;
+    cancelAnimationFrame(frame.current!);
+    frame.current = requestAnimationFrame(() => {
+      const card = cardRef.current;
+      const shine = shineRef.current;
+      const prism = prismRef.current;
 
-    if (!card || !shine || !prism) return;
+      if (!card || !shine || !prism) return;
 
-    const rect = card.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    const rotateY = -1 / 10 * x + 20;
-    const rotateX = 4 / 40 * y - 20;
+      const rect = card.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateY = (x - centerX) / centerX * 15; // -15deg ~ 15deg
+      const rotateX = (centerY - y) / centerY * 15; // -15deg ~ 15deg
 
-    card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.25), rgba(255,255,255,0.05) 30%, transparent 60%)`;
-    prism.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px, rgba(255, 0, 150, 0.2), rgba(0, 255, 255, 0.2), rgba(255, 255, 0, 0.2), rgba(255, 0, 150, 0.2))`;
-    prism.style.opacity = "1";
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.4), transparent 70%)`;
+      prism.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px,
+        rgba(255, 0, 150, 0.2),
+        rgba(0, 255, 255, 0.2),
+        rgba(255, 255, 0, 0.2),
+        rgba(255, 0, 150, 0.2))`;
+      prism.style.opacity = "1";
+    });
   };
+
 
   const handleMouseMove = (e: React.MouseEvent) => {
     handleInteraction(e.clientX, e.clientY);
@@ -66,20 +79,22 @@ export function InteractiveCard({ image }: Props) {
   };
 
   const resetStyles = () => {
+    cancelAnimationFrame(frame.current!);
     const card = cardRef.current;
     const shine = shineRef.current;
     const prism = prismRef.current;
 
-    if (card) card.style.transform = "rotateX(0deg) rotateY(0deg)";
+    if (card) card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
     if (shine) shine.style.background = "none";
     if (prism) prism.style.opacity = "0";
   };
 
   return (
-    <div style={styles.imageItem}>
+    <div style={styles.imageItem} onClick={onClick}>
+      <style>{neonAnimation}</style>
       <div
         ref={cardRef}
-        style={styles.imageWrapper}
+        style={styles.imageWrapper(isSelected)}
         onMouseMove={handleMouseMove}
         onMouseLeave={resetStyles}
         onTouchStart={handleTouchStart}
@@ -87,7 +102,7 @@ export function InteractiveCard({ image }: Props) {
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
       >
-        <img src={image.image_url} alt={image.title} style={styles.image} />
+        <img src={image.image_url} alt={image.title ?? "이미지"} style={styles.image} />
         <div ref={shineRef} style={styles.shine}></div>
         <div ref={prismRef} style={styles.prism}></div>
       </div>
@@ -101,7 +116,7 @@ const styles = {
     // justifyContent: "center",
     alignItems: "center",
   },
-  imageWrapper: {
+  imageWrapper: (isSelected: boolean)=> ({
     width: "100%",
     maxWidth: "214px",
     minWidth:'50%',
@@ -112,10 +127,14 @@ const styles = {
     alignItems: "center",
     borderRadius: "8px",
     overflow: "hidden",
-    transition: "transform 0.1s ease",
+    transition: "transform 0.3s ease",
     position: "relative" as const,
     willChange: "transform",
-  },
+    boxShadow: isSelected
+    ? "0 0 20px 5px rgba(0, 255, 128, 0.7)" // 처음 기본 네온
+    : "none",
+  animation: isSelected ? "neonPulse 2s infinite alternate" : "none",
+}),
   image: {
     width: "100%",
     height: "100%",
@@ -129,7 +148,7 @@ const styles = {
     right: 0,
     bottom: 0,
     pointerEvents: "none" as const,
-    transition: "background 0.3s ease",
+    transition: "background 0.4s ease",
     borderRadius: "8px",
     zIndex: 1,
   },
@@ -142,8 +161,22 @@ const styles = {
     pointerEvents: "none" as const,
     borderRadius: "8px",
     opacity: 0,
-    transition: "opacity 0.4s ease",
+    transition: "opacity 0.5s ease",
     mixBlendMode: "screen" as const,
     zIndex: 2,
   },
+  
 };
+export const neonAnimation = `
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 10px 2px rgba(0, 255, 128, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px 8px rgba(0, 255, 128, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 10px 2px rgba(0, 255, 128, 0.4);
+  }
+}
+`;

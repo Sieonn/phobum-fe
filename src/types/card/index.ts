@@ -3,4 +3,4 @@ export interface PatchCard {
     description: string,
     author: string,
     ImgUrl:string,
-  }
+}

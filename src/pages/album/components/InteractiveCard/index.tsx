@@ -140,20 +140,22 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
     handleInteraction(e.clientX, e.clientY);
   };
 
+  // 터치 이벤트 핸들러 수정
   const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault(); // 스크롤 방지
     if (!touchStartRef.current) return;
+    
+    // preventDefault는 스크롤을 방해할 수 있으므로 제거
+    // e.preventDefault(); 
 
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
 
-    // 수직 스크롤 감도 낮추기
-    if (deltaY > deltaX * 2) {
+    // 수직 스크롤 감도 조정
+    if (deltaY > deltaX * 1.5) { // 비율 조정
       return;
     }
 
-    // 즉시 효과 적용 (임계값 제거)
     handleInteraction(touch.clientX, touch.clientY);
   };
 
@@ -245,6 +247,9 @@ const styles = {
       ? "0 0 20px 5px rgba(0, 255, 128, 0.7)"
       : "none",
     animation: isSelected ? "neonPulse 2s infinite alternate" : "none",
+    touchAction: 'none', // 터치 동작 최적화
+    userSelect: 'none' as const,
+    WebkitTapHighlightColor: 'transparent',
   }),
   image: {
     width: "100%",

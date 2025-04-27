@@ -1,7 +1,8 @@
 
 # 📱 포범 (Phobum) - 당신만의 포토카드 제작 서비스
-
+[MakeCard](https://github.com/Sieonn/Mini-Project)리팩토링 프로젝트<br/>
 나만의 특별한 포토카드를 만들고 공유하는 웹 애플리케이션입니다.
+
 
 ## ✨ 주요 기능
 
@@ -13,7 +14,7 @@
 - 💫 부드러운 애니메이션과 전환 효과
 
 ## 🛠️ 기술 스택
-
+### Frontend
 - 프레임워크: `React`
 - 스타일링:
   `Styled Components`
@@ -100,6 +101,89 @@ src/
 - 로딩 상태
 
 
+---
+## Backend
+
+### 🛠 기술 스택
+Backend
+- Runtime: Node.js
+- Framework: Express.js
+- Database: Supabase
+- Storage: Supabase Storage
+- Authentication: JWT, Bcrypt
+- Cloud Platform: Vercel
+
+주요 라이브러리
+``` powersheell
+{
+  "@supabase/supabase-js": "^2.49.4",
+  "axios": "^1.8.3",
+  "bcryptjs": "^3.0.2",
+  "cors": "^2.8.5",
+  "express": "^4.21.2",
+  "jsonwebtoken": "^9.0.2",
+  "multer": "^1.4.5-lts.1"
+}
+```
+
+### 🚀 주요 기능
+1. 인증 시스템
+   일반 회원가입/로그인
+   카카오 소셜 로그인
+   JWT 기반 인증
+   Access Token & Refresh Token 관리
+2. 이미지 관리
+   이미지 업로드 (5MB 제한)
+   이미지 조회 및 상세보기
+   이미지 삭제
+   청크 단위 업로드 지원
+3. 사용자 관리
+   프로필 조회
+   닉네임 변경
+   회원 탈퇴
+   이메일/닉네임 중복 확인
+### 📁 프로젝트 구조
+``` powershell
+src/
+├── app.js              # 애플리케이션 진입점
+├── config/             # 설정 파일
+│   ├── db.js          # 데이터베이스 설정
+│   └── init.sql       # DB 스키마
+├── middleware/         # 미들웨어
+│   └── auth.js        # 인증 미들웨어
+├── routes/            # 라우트 핸들러
+│   ├── auth.js        # 인증 관련 라우트
+│   └── images.js      # 이미지 관련 라우트
+└── utils/             # 유틸리티
+    └── tokenGenerator.js  # 토큰 생성기
+```
+### 🚦 API 엔드포인트
+인증<br/>
+- `POST /auth/signup` - 회원가입
+- `POST /auth/login` - 로그인
+- `GET /auth/kakao` - 카카오 로그인
+- `POST /auth/refresh` - 토큰 갱신
+- `GET /auth/me` - 사용자 정보 조회
+- `DELETE /auth/me` - 회원 탈퇴
+
+이미지<br>
+- `POST /api/images` - 이미지 업로드
+- `GET /api/images` - 이미지 목록 조회
+- `GET /api/images/:id` - 이미지 상세 조회
+- `DELETE /api/images/:id` - 이미지 삭제
+  
+### 🔒 보안 기능
+- CORS 보안 설정
+- JWT 기반 인증
+- 비밀번호 암호화 (bcrypt)
+- 파일 업로드 제한
+- API 요청 타임아웃 처리
+  
+### 🔍 성능 최적화
+- 이미지 청크 업로드
+- 응답 캐싱
+- 타임아웃 설정
+- 비동기 처리 최적화
 
 ## 📄 저작권 및 사용권
 

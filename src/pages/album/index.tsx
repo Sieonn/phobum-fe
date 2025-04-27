@@ -53,7 +53,6 @@ export default function Album() {
       alert("삭제되었습니다.");
       // 이미지 목록 새로고침
       const response = await imagesApi.getList();
-      setImages(response.data);
       // 모달 닫기
       closeDetail();
     } catch (err) {

@@ -5,20 +5,23 @@ import { colors } from "../../../../styles/colors";
 export const Content = styled.div`
   /* background-color: ${colors.gray400}; */
   border-radius: 20px;
+  /* height: 100%; */
   padding: 15px;
   width: 90%;
   max-width: 300px;
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 16px;
+  margin: 0 auto;
 `;
 
 export const CardSection = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 16px;
+  padding: 15px;
 `;
 
 export const MoreSection = styled.div`

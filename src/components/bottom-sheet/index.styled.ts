@@ -7,7 +7,7 @@ export const CommonOverlay = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100%; 
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
   z-index: 1000;
@@ -63,28 +63,13 @@ export const Handle = styled.div`
   margin: 15px auto 0px;
 `;
 
-export const BottomSheetContainer = styled.div<{ $isOpen: boolean }>`
-  position: fixed;
-  background-color: ${colors.gray400};
-  height: 50%;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  z-index: 1000;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateY(${(props) => (props.$isOpen ? "0" : "100%")});
-  border-radius: 20px 20px 0 0;
-  padding: 20px;
-  will-change: transform;
-`;
-
 export const ActionsContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 15px 0;
-    transform: translateY(0);
-    transition: all 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 15px 0;
+  transform: translateY(0);
+  transition: all 0.2s ease-out;
 `;
 
 export const ActionButton = styled.button<{ $color?: string }>`
@@ -115,11 +100,31 @@ export const Container = styled.div<{ $isOpen: boolean }>`
   width: 100%;
   max-width: ${theme.size.maxWidth};
   min-width: ${theme.size.minWidth};
+  /* min-height: 200px; */
   background: ${colors.gray400};
   border-radius: 20px 20px 0 0;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1001;
   padding: 0 20px;
-  margin: 0 auto;
+ // padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
   will-change: transform;
+  display: flex;
+  flex-direction: column;
+
+  /* @supports (-webkit-touch-callout: none) {
+    //iOS 디바이스에만 적용
+    //min-height: 250px;
+    //padding-bottom: max(env(safe-area-inset-bottom), 34px);
+  }
+
+  @media screen and (max-height: 667px) {
+    //iPhone SE, iPhone 8 등 작은 화면
+    //min-height: 180px;
+  }
+
+  @media screen and (min-height: 844px) {
+    //iPhone 12 이상의 큰 화면
+    //min-height: 300px;
+    //padding-bottom: max(env(safe-area-inset-bottom), 34px);
+  } */
 `;

@@ -89,15 +89,21 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      // 회전 각도 제한 (카드 크기에 비례하게 조정)
-      const sizeMultiplier = Math.min(1, rect.width / 200); // 카드 크기 비례 계수
-      const rotateY = clamp((x - centerX) / centerX * 8 * sizeMultiplier, -8, 8);
-      const rotateX = clamp((centerY - y) / centerY * 8 * sizeMultiplier, -8, 8);
+      // 모바일에서의 회전 각도와 효과 강화
+      const sizeMultiplier = Math.min(2, rect.width / 150); // 회전 각도 증가
+      const rotateY = clamp((x - centerX) / centerX * 20 * sizeMultiplier, -20, 20);
+      const rotateX = clamp((centerY - y) / centerY * 20 * sizeMultiplier, -20, 20);
 
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      // 부드러운 움직임을 위한 트랜지션
+      card.style.transition = 'transform 0.1s ease-out';
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
       
-      // 간단한 하이라이트만 적용 (프리즘 효과 제외)
-      shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.3), transparent 60%)`;
+      // 강화된 하이라이트 효과
+      shine.style.background = `
+        radial-gradient(circle at ${x}px ${y}px, 
+        rgba(255,255,255,0.5), 
+        transparent 80%
+      )`;
     });
   };
 
@@ -143,20 +149,22 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   // 터치 이벤트 핸들러 수정
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!touchStartRef.current) return;
-    
-    // preventDefault는 스크롤을 방해할 수 있으므로 제거
-    // e.preventDefault(); 
 
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
 
     // 수직 스크롤 감도 조정
-    if (deltaY > deltaX * 1.5) { // 비율 조정
+    if (deltaY > deltaX * 1.2) {
+      resetStyles();
       return;
     }
 
-    handleInteraction(touch.clientX, touch.clientY);
+    // 즉각적인 효과 적용을 위해 임계값 낮춤
+    if (deltaX > 2) {
+      e.preventDefault(); // 스크롤 방지
+      handleInteraction(touch.clientX, touch.clientY);
+    }
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -181,11 +189,10 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
     const prism = prismRef.current;
 
     if (card) {
-      // CSS 트랜지션으로 부드럽게 복원
-      card.style.transition = "transform 0.3s ease";
-      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+      // 부드러운 복원 효과
+      card.style.transition = "all 0.3s cubic-bezier(0.23, 1, 0.32, 1)";
+      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
       
-      // 트랜지션 완료 후 트랜지션 제거 (다음 마우스/터치 이벤트에 영향 안 주도록)
       setTimeout(() => {
         if (card) card.style.transition = "";
       }, 300);
@@ -197,7 +204,10 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
 
   return (
     <div 
-      style={styles.imageItem} 
+      style={{
+        ...styles.imageItem,
+        touchAction: 'pan-y',  // 수직 스크롤만 허용
+      }} 
       onClick={onClick}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -228,6 +238,9 @@ const styles = {
   imageItem: {
     display: "flex",
     alignItems: "center",
+    touchAction: 'pan-y',  // 수직 스크롤 허용
+    userSelect: 'none' as const,
+    WebkitTapHighlightColor: 'transparent',
   },
   imageWrapper: (isSelected: boolean) => ({
     width: "100%",
@@ -247,9 +260,6 @@ const styles = {
       ? "0 0 20px 5px rgba(0, 255, 128, 0.7)"
       : "none",
     animation: isSelected ? "neonPulse 2s infinite alternate" : "none",
-    touchAction: 'none', // 터치 동작 최적화
-    userSelect: 'none' as const,
-    WebkitTapHighlightColor: 'transparent',
   }),
   image: {
     width: "100%",

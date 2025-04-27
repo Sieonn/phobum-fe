@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ImageResponse, imagesApi } from "../../api/images";
 import { AppBar } from "../../components/app-bar";
 import { Layout } from "../../components/layout";
-import { InteractiveCard } from "./components";
+import { InteractiveCard } from "./components/InteractiveCard";
 import styled from "styled-components";
 import FloatingButton from "../../components/fab";
 import { TextStyled } from "../intro/Intro.styled";

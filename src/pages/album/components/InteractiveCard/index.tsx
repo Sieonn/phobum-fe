@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { ImageResponse } from "../../../api/images";
-import { colors } from "../../../styles/colors";
+import { ImageResponse } from "../../../../api/images";
+import { colors } from "../../../../styles/colors";
 
 interface Props {
   image: ImageResponse;

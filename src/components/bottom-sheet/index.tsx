@@ -1,6 +1,7 @@
 import styled from "styled-components"
 import { colors } from "../../styles/colors"
 import { ActionButton, ActionsContainer, CommonOverlay, Container, DimmedOverlay, Handle } from "./index.styled";
+import { useEffect, useState } from "react";
 export type BottomSheetAction = {
     label: string;
     onClick: () => void;
@@ -14,11 +15,20 @@ interface BottomSheetProps {
 }
 
 export default function BottomSheet({ isOpen, onClose, actions }: BottomSheetProps) {
-    if (!isOpen) return null;
+    const [visible, setVisible] = useState(isOpen);
+    useEffect(() => {
+        if (isOpen) setVisible(true);
+      }, [isOpen]);
+    
+      const handleTransitionEnd = () => {
+        if (!isOpen) setVisible(false);
+      };
+    
+      if (!visible) return null;
     return (
         <>
         <DimmedOverlay $isOpen={isOpen} onClick={onClose}/>
-            <Container $isOpen={isOpen}>
+            <Container $isOpen={isOpen} onTransitionEnd={handleTransitionEnd}>
                 <Handle />
                 <ActionsContainer>
                     {actions.map((action, index) => (

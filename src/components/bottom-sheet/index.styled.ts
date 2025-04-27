@@ -43,16 +43,16 @@ export const Overlay = styled.div`
 `;
 // BottomSheet용 반투명 오버레이 스타일 수정
 export const DimmedOverlay = styled.div<{ $isOpen: boolean }>`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
-    transition: opacity 0.3s ease;
-    pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: ${({ $isOpen }) => ($isOpen ? "auto" : "none")};
 `;
 
 export const Handle = styled.div`
@@ -71,10 +71,11 @@ export const BottomSheetContainer = styled.div<{ $isOpen: boolean }>`
   bottom: 0;
   left: 0;
   z-index: 1000;
-  transition: transform 0.5s ease-in-out;
-  transform: translateY(${props => props.$isOpen ? '0' : '100%'});
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(${(props) => (props.$isOpen ? "0" : "100%")});
   border-radius: 20px 20px 0 0;
   padding: 20px;
+  will-change: transform;
 `;
 
 export const ActionsContainer = styled.div`
@@ -82,6 +83,8 @@ export const ActionsContainer = styled.div`
     flex-direction: column;
     gap: 8px;
     padding: 15px 0;
+    transform: translateY(0);
+    transition: all 0.2s ease-out;
 `;
 
 export const ActionButton = styled.button<{ $color?: string }>`
@@ -105,17 +108,18 @@ export const ActionButton = styled.button<{ $color?: string }>`
 `;
 
 export const Container = styled.div<{ $isOpen: boolean }>`
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(${props => props.$isOpen ? '0' : '100%'});
-    width: 100%;
-    max-width: ${theme.size.maxWidth}; 
-    min-width: ${theme.size.minWidth};
-    background: ${colors.gray400};
-    border-radius: 20px 20px 0 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1001;
-    padding: 0 20px;
-    margin: 0 auto;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, ${({ $isOpen }) => ($isOpen ? "0%" : "100%")});
+  width: 100%;
+  max-width: ${theme.size.maxWidth};
+  min-width: ${theme.size.minWidth};
+  background: ${colors.gray400};
+  border-radius: 20px 20px 0 0;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1001;
+  padding: 0 20px;
+  margin: 0 auto;
+  will-change: transform;
 `;

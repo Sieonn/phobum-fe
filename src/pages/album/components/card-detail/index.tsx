@@ -80,6 +80,8 @@ export const MoreSection = styled.div`
 
 export const ContentsWrapper = styled.div`
     display: flex;
+    width: 300px;
+    max-width: 70dvw;
     flex-direction: column;
     justify-content: center;  /* Added justify-content for centering content */
     align-items: center;  /* Added align-items for centering content */

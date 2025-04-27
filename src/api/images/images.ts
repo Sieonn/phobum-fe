@@ -126,7 +126,7 @@ export const imagesApi = {
     },
 
     delete: async (id: string) => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         if (!token) {
             throw new Error('인증 토큰이 없습니다. 로그인이 필요합니다.');
         }

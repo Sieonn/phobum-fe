@@ -53,7 +53,6 @@ export function Login() {
     
                     // ✅ Zustand에 유저 정보 저장
                     setUser(userData);
-                    console.log("로그인 성공", userData);
     
                     alert("로그인이 완료되었습니다!");
                     navigate(ROUTE_PATHS.MAIN, { replace: true });

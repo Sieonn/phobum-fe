@@ -133,5 +133,4 @@ const OwnerBadge = styled.span`
   color: ${colors.black};
   padding: 2px 6px;
   border-radius: 10px;
-  font-weight: bold;
 `;

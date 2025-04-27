@@ -75,7 +75,6 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   };
 
   const applySimplifiedEffect = (clientX: number, clientY: number) => {
-    // 이전 프레임 취소
     cancelAnimationFrame(frameRef.current);
     
     frameRef.current = requestAnimationFrame(() => {
@@ -141,34 +140,30 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
     handleInteraction(e.clientX, e.clientY);
   };
 
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // 스크롤 방지
+    if (!touchStartRef.current) return;
+
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+
+    // 수직 스크롤 감도 낮추기
+    if (deltaY > deltaX * 2) {
+      return;
+    }
+
+    // 즉시 효과 적용 (임계값 제거)
+    handleInteraction(touch.clientX, touch.clientY);
+  };
+
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
     const touch = e.touches[0];
     touchStartRef.current = {
       x: touch.clientX,
       y: touch.clientY
     };
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartRef.current) return;
-
-    // 성능을 위해 passive 이벤트로 처리
-    const touch = e.touches[0];
-    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
-    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
-
-    // 작은 움직임은 무시
-    if (deltaX < MOVE_THRESHOLD && deltaY < MOVE_THRESHOLD) {
-      return;
-    }
-
-    // 수직 스크롤이 더 큰 경우 카드 효과를 적용하지 않음
-    if (deltaY > deltaX * 1.5) {
-      return;
-    }
-
-    // 디바운싱 - 마지막 터치 이벤트로부터 일정 시간이 지난 후에 처리
-    handleInteraction(touch.clientX, touch.clientY);
   };
 
   const handleTouchEnd = () => {
@@ -199,17 +194,20 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   };
 
   return (
-    <div style={styles.imageItem} onClick={onClick}>
+    <div 
+      style={styles.imageItem} 
+      onClick={onClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+    >
       <style>{neonAnimation}</style>
       <div
         ref={cardRef}
         style={styles.imageWrapper(isSelected)}
         onMouseMove={handleMouseMove}
         onMouseLeave={resetStyles}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
       >
         <img 
           src={image.image_url} 

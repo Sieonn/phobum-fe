@@ -1,5 +1,5 @@
 import { useCallback, useState, useMemo } from "react";
-import { ImageResponse, imagesApi } from "../../../../api/images";
+import { ImageResponse } from "../../../../api/images";
 import { colors } from "../../../../styles/colors";
 import { InteractiveCard } from "../InteractiveCard";
 import BottomSheet, { BottomSheetAction } from "../../../../components/bottom-sheet";

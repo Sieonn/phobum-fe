@@ -1,21 +1,34 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { ImageResponse, imagesApi } from "../../../../api/images";
 import { colors } from "../../../../styles/colors";
 import { InteractiveCard } from "../InteractiveCard";
 import BottomSheet, { BottomSheetAction } from "../../../../components/bottom-sheet";
 import { CommonOverlay } from "../../../../components/bottom-sheet/index.styled";
 import { Author, CardSection, Content, ContentsSection, Description, More2Icon, MoreSection, Title } from "./index.styled";
+import styled from "styled-components";
 
 interface CardDetailProps {
   image: ImageResponse;
+  currentUserId?: string | null; // 현재 로그인한 사용자 ID
   onClose: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   onShare?: () => void;
 }
 
-export default function CardDetail({ image, onClose, onEdit, onDelete, onShare }: CardDetailProps) {
+export default function CardDetail({ 
+  image, 
+  currentUserId, 
+  onClose, 
+  onEdit, 
+  onDelete, 
+  onShare 
+}: CardDetailProps) {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  
+  const isOwner = useMemo(() => {
+    return image.user_id == currentUserId;
+  }, [image.user_id, currentUserId]);
 
   const handleMoreClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -26,40 +39,60 @@ export default function CardDetail({ image, onClose, onEdit, onDelete, onShare }
     setIsBottomSheetOpen(false);
   }, []);
 
-  const handleCardDelete = useCallback(() => {
-    imagesApi.delete(image.id)
-      .then(() => {
-        alert("삭제되었습니다.");
-        onClose();
-        onDelete?.();
-      })
-      .catch(err => {
-        console.error("삭제 실패:", err);
-        alert("삭제에 실패했습니다.");
+  const bottomSheetActions: BottomSheetAction[] = useMemo(() => {
+    const actions: BottomSheetAction[] = [];
+    
+    if (isOwner) {
+      actions.push({
+        label: "수정하기",
+        onClick: () => {
+          onEdit?.();
+          handleCloseBottomSheet();
+        }
       });
-  }, [image.id, onClose, onDelete]);
-
-  const bottomSheetActions: BottomSheetAction[] = [
-    {
-      label: "수정하기",
-      onClick: () => {
-        onEdit?.();
-        handleCloseBottomSheet();
-      }
-    },
-    {
-      label: "삭제하기",
-      onClick: handleCardDelete,
-      color: colors.red100
-    },
-    {
+      
+      actions.push({
+        label: "삭제하기",
+        onClick: () => {
+          if (window.confirm('정말 삭제하시겠습니까?')) {
+            onDelete?.();
+            handleCloseBottomSheet();
+          }
+        },
+        color: colors.red100
+      });
+    } else {
+      // 권한 없는 사용자에게는 비활성화된 버튼 표시
+      actions.push({
+        label: "수정하기 (권한 없음)",
+        onClick: () => {
+          alert("수정 권한이 없습니다.");
+          handleCloseBottomSheet();
+        },
+        color: colors.gray300 // 비활성화된 색상
+      });
+      
+      actions.push({
+        label: "삭제하기 (권한 없음)",
+        onClick: () => {
+          alert("삭제 권한이 없습니다.");
+          handleCloseBottomSheet();
+        },
+        color: colors.gray300 // 비활성화된 색상
+      });
+    }
+    
+    // 공유하기는 모든 사용자에게 활성화
+    actions.push({
       label: "공유하기",
       onClick: () => {
         onShare?.();
         handleCloseBottomSheet();
       }
-    }
-  ];
+    });
+    
+    return actions;
+  }, [isOwner, onEdit, onDelete, onShare, handleCloseBottomSheet]);
 
   const handleContentClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -77,7 +110,10 @@ export default function CardDetail({ image, onClose, onEdit, onDelete, onShare }
         <ContentsSection>
           <Title>{image.title}</Title>
           <Description>{image.description}</Description>
-          <Author>{image.users.nickname}</Author>
+          <Author>
+            {image.users.nickname}
+            {isOwner && <OwnerBadge>내 작품</OwnerBadge>}
+          </Author>
         </ContentsSection>
         <BottomSheet
           isOpen={isBottomSheetOpen}
@@ -88,3 +124,14 @@ export default function CardDetail({ image, onClose, onEdit, onDelete, onShare }
     </CommonOverlay>
   );
 }
+
+// 작성자 표시용 배지
+const OwnerBadge = styled.span`
+  margin-left: 8px;
+  font-size: 0.6rem;
+  background-color: ${colors.neon200};
+  color: ${colors.black};
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+`;

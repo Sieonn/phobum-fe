@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ImageResponse, imagesApi } from "../../api/images";
 import { AppBar } from "../../components/app-bar";
 import { Layout } from "../../components/layout";
@@ -7,8 +7,8 @@ import styled from "styled-components";
 import FloatingButton from "../../components/fab";
 import { TextStyled } from "../intro/Intro.styled";
 import { colors } from "../../styles/colors";
-import { PatchCard } from "../../types/card";
 import CardDetail from "./components/card-detail";
+import { useStore } from "../../store/store";
 
 
 export default function Album() {
@@ -18,6 +18,9 @@ export default function Album() {
   const [selectedImage, setSelectedImage] = useState<ImageResponse | null>(null); // ⭐ 선택된 이미지
   const [isDetailOpen, setIsDetailOpen] = useState(false); // ⭐ 모달 열림 여부
 
+  const user = useStore((state) => state.user);
+
+  const currentUserId = user?.id ? String(user.id) : undefined;
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -43,6 +46,21 @@ export default function Album() {
     setIsDetailOpen(false);   // 모달 닫기
     setSelectedImage(null);   // 선택된 이미지 초기화
   };
+
+  const handleDelete = useCallback(async (id: string) => {
+    try {
+      await imagesApi.delete(id);
+      alert("삭제되었습니다.");
+      // 이미지 목록 새로고침
+      const response = await imagesApi.getList();
+      setImages(response.data);
+      // 모달 닫기
+      closeDetail();
+    } catch (err) {
+      console.error("삭제 실패:", err);
+      alert("삭제에 실패했습니다.");
+    }
+  }, []);
 
   if (error) return <div>{error}</div>;
   if (loading) return <div>로딩 중...</div>;
@@ -72,8 +90,10 @@ export default function Album() {
         <FloatingButton />
         {isDetailOpen && selectedImage && (
           <CardDetail 
-            image={selectedImage}  // 선택된 이미지 데이터 전달
-            onClose={closeDetail} 
+            currentUserId={currentUserId}
+            image={selectedImage}
+            onClose={closeDetail}
+            onDelete={() => handleDelete(selectedImage.id)}
           />
         )}
       </Container>

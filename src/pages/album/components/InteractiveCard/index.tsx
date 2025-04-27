@@ -15,20 +15,45 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const frameRef = useRef<number>(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [cardWidth, setCardWidth] = useState(0);
   
-  // 모바일 기기 감지
+  // 모바일 기기 감지 및 카드 너비 측정
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const checkSizes = () => {
+      // 기기 타입 감지 (터치 기기인지 여부 확인)
+      setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
+      
+      // 카드 실제 너비 측정
+      if (cardRef.current) {
+        setCardWidth(cardRef.current.offsetWidth);
+      }
     };
     
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    checkSizes();
+    window.addEventListener('resize', checkSizes);
+    
+    // 초기 로드 후 약간의 지연을 두고 한 번 더 측정 (DOM 렌더링 완료 후)
+    const timer = setTimeout(checkSizes, 500);
     
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', checkSizes);
       cancelAnimationFrame(frameRef.current);
+      clearTimeout(timer);
     };
+  }, []);
+
+  // 카드 크기가 변경되면 다시 측정
+  useEffect(() => {
+    if (cardRef.current) {
+      const observer = new ResizeObserver(() => {
+        if (cardRef.current) {
+          setCardWidth(cardRef.current.offsetWidth);
+        }
+      });
+      
+      observer.observe(cardRef.current);
+      return () => observer.disconnect();
+    }
   }, []);
 
   // 절대적으로 좌표를 직접 계산하는 것보다 변화량을 제한
@@ -37,11 +62,14 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   };
 
   const handleInteraction = (clientX: number, clientY: number) => {
-    if (isMobile) {
-      // 모바일에서는 단순화된 이펙트 적용
+    // 카드 크기에 따라 효과 적용 방식 결정
+    const isSmallCard = cardWidth < 150;
+    
+    if (isSmallCard || isMobile) {
+      // 작은 카드나 모바일에서는 단순화된 이펙트 적용
       applySimplifiedEffect(clientX, clientY);
     } else {
-      // 데스크톱에서는 풀 이펙트 적용
+      // 충분히 큰 카드에서는 풀 이펙트 적용
       applyFullEffect(clientX, clientY);
     }
   };
@@ -62,9 +90,10 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       
-      // 회전 각도 제한
-      const rotateY = clamp((x - centerX) / centerX * 8, -8, 8);
-      const rotateX = clamp((centerY - y) / centerY * 8, -8, 8);
+      // 회전 각도 제한 (카드 크기에 비례하게 조정)
+      const sizeMultiplier = Math.min(1, rect.width / 200); // 카드 크기 비례 계수
+      const rotateY = clamp((x - centerX) / centerX * 8 * sizeMultiplier, -8, 8);
+      const rotateX = clamp((centerY - y) / centerY * 8 * sizeMultiplier, -8, 8);
 
       card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
       
@@ -88,8 +117,11 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
       const y = clientY - rect.top;
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      const rotateY = clamp((x - centerX) / centerX * 15, -15, 15);
-      const rotateX = clamp((centerY - y) / centerY * 15, -15, 15);
+      
+      // 카드 크기에 비례하게 회전 각도 조정
+      const sizeMultiplier = Math.min(1, rect.width / 200); // 카드 크기 비례 계수
+      const rotateY = clamp((x - centerX) / centerX * 15 * sizeMultiplier, -15, 15);
+      const rotateX = clamp((centerY - y) / centerY * 15 * sizeMultiplier, -15, 15);
 
       card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
       shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.4), transparent 70%)`;
@@ -106,7 +138,6 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   const MOVE_THRESHOLD = 5;
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isMobile) return; // 모바일에서 마우스 이벤트 무시
     handleInteraction(e.clientX, e.clientY);
   };
 
@@ -187,7 +218,7 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
           loading="lazy"
         />
         <div ref={shineRef} style={styles.shine}></div>
-        {!isMobile && <div ref={prismRef} style={styles.prism}></div>}
+        <div ref={prismRef} style={styles.prism}></div>
       </div>
     </div>
   );

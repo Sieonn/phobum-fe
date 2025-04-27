@@ -1,7 +1,8 @@
 
 # 📱 포범 (Phobum) - 당신만의 포토카드 제작 서비스
-
+[MakeCard](https://github.com/Sieonn/Mini-Project)리팩토링 프로젝트<br/>
 나만의 특별한 포토카드를 만들고 공유하는 웹 애플리케이션입니다.
+
 
 ## ✨ 주요 기능
 
@@ -13,7 +14,7 @@
 - 💫 부드러운 애니메이션과 전환 효과
 
 ## 🛠️ 기술 스택
-
+### Frontend
 - 프레임워크: `React`
 - 스타일링:
   `Styled Components`
@@ -23,6 +24,26 @@
 - 인증: JWT (리프레시 토큰)
 - 이미지 처리: WebP 변환
 
+### Backend
+- Runtime: `Node.js`
+- Framework: `Express.js`
+- Database: `Supabase`
+- Storage: `Supabase Storage`
+- Authentication: `JWT, Bcrypt`
+- Cloud Platform: `Vercel`
+
+주요라이브러리
+``` powershell
+{
+  "@supabase/supabase-js": "^2.49.4",
+  "axios": "^1.8.3",
+  "bcryptjs": "^3.0.2",
+  "cors": "^2.8.5",
+  "express": "^4.21.2",
+  "jsonwebtoken": "^9.0.2",
+  "multer": "^1.4.5-lts.1"
+}
+```
 ## 🚀 시작하기
 
 1. 저장소 클론:

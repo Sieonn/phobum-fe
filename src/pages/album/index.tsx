@@ -38,8 +38,8 @@ export default function Album() {
   }, []);
 
   const handleCardClick = (image: ImageResponse) => {
-    setSelectedImage(image);  // 클릭된 이미지 데이터 저장
-    setIsDetailOpen(true);    // 모달 열기
+    setSelectedImage(image);
+    setIsDetailOpen(true);
   };
 
   const closeDetail = () => {
@@ -52,7 +52,7 @@ export default function Album() {
       await imagesApi.delete(id);
       alert("삭제되었습니다.");
       // 이미지 목록 새로고침
-      const response = await imagesApi.getList();
+      setImages(prev => prev.filter(img => img.id !== id))
       // 모달 닫기
       closeDetail();
     } catch (err) {
@@ -60,6 +60,19 @@ export default function Album() {
       alert("삭제에 실패했습니다.");
     }
   }, []);
+  
+  const handleImageEdit = useCallback((updatedImage: ImageResponse) => {
+    setImages(prevImages => 
+      prevImages.map(img => 
+        img.id === updatedImage.id ? updatedImage : img
+      )
+    );
+    
+    // 선택된 이미지도 업데이트
+    if (selectedImage?.id === updatedImage.id) {
+      setSelectedImage(updatedImage);
+    }
+  }, [selectedImage]);
 
   if (error) return <div>{error}</div>;
   if (loading) return <div>로딩 중...</div>;
@@ -83,6 +96,7 @@ export default function Album() {
               key={image.id} 
               image={image} 
               onClick={() => handleCardClick(image)}  // 클릭 핸들러 전달
+              isSelected={selectedImage?.id === image.id}
             />
           ))
         )}
@@ -93,6 +107,7 @@ export default function Album() {
             image={selectedImage}
             onClose={closeDetail}
             onDelete={() => handleDelete(selectedImage.id)}
+            onEdit={handleImageEdit} 
           />
         )}
       </Container>

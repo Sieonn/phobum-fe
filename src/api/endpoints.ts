@@ -9,7 +9,7 @@ export const AUTH = {
   
 // api/endpoints.ts
 export const IMAGES = {
-  UPLOAD: '/api/images',  // '/api' prefix 추가
+  UPLOAD: '/api/images',
   LIST: '/api/images',
   DETAIL: (id: string) => `/api/images/${id}`,
   UPDATE: (id: string) => `/api/images/${id}`,

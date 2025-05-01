@@ -1,5 +1,5 @@
-import { useCallback, useState, useMemo } from "react";
-import { ImageResponse } from "../../../../api/images";
+import { useCallback, useState, useMemo, useEffect } from "react";
+import { ImageResponse, imagesApi, ImageUpdateRequest } from "../../../../api/images";
 import { colors } from "../../../../styles/colors";
 import { InteractiveCard } from "../InteractiveCard";
 import BottomSheet, { BottomSheetAction } from "../../../../components/bottom-sheet";
@@ -12,7 +12,7 @@ interface CardDetailProps {
   image: ImageResponse;
   currentUserId?: string | null; // 현재 로그인한 사용자 ID
   onClose: () => void;
-  onEdit?: (updatedImage: Partial<ImageResponse>) => void;
+  onEdit?: (updatedImage: ImageResponse) => void;
   onDelete?: () => void;
   onShare?: () => void;
 }
@@ -27,19 +27,49 @@ export default function CardDetail({
 }: CardDetailProps) {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [isModifyOpen, setIsModifyOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<ImageResponse>(image);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleModifySave = useCallback(async (updatedImage: ImageResponse) => {
+    if (!currentImage) return;
+    
+    try {
+      setIsUpdating(true);
+      
+      // 현재 컴포넌트의 상태 업데이트
+      setCurrentImage(updatedImage);
+      
+      // 부모 컴포넌트에도 업데이트 알림
+      if (onEdit) {
+        onEdit(updatedImage);
+      }
+      
+      // 수정 모달 닫기
+      setIsModifyOpen(false);
+
+    } catch (error) {
+      console.error('수정 실패:', error);
+      alert('수정에 실패했습니다.');
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [currentImage, onEdit]);
+
+  // image prop이 변경될 때만 currentImage 업데이트
+  useEffect(() => {
+    if (!isUpdating) {
+      setCurrentImage(image);
+    }
+  }, [image, isUpdating]);
+
   const isOwner = useMemo(() => {
-    return image.user_id == currentUserId;
-  }, [image.user_id, currentUserId]);
+    return currentImage.user_id == currentUserId;
+  }, [currentImage.user_id, currentUserId]);
 
   const handleEditClick = useCallback(() => {
     setIsBottomSheetOpen(false);
     setIsModifyOpen(true);
   }, []);
-
-  const handleModifySave = useCallback((updatedImage: Partial<ImageResponse>) => {
-    onEdit?.(updatedImage);
-    setIsModifyOpen(false);
-  }, [onEdit]);
 
   const handleMoreClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -106,20 +136,44 @@ export default function CardDetail({
     e.stopPropagation();
   }, []);
 
+  const getImageUrl = (url: string) => {
+    if (!url) return '/images/default-image.png';
+    
+    // Blob URL인 경우 그대로 반환
+    if (url.startsWith('blob:')) {
+      return url;
+    }
+    
+    // 이미 URL에 쿼리 파라미터가 있는지 확인
+    if (url.includes('?')) {
+      return url;
+    }
+    return `${url}?t=${new Date().getTime()}`;
+  };
+
+
+
   return (
     <CommonOverlay onClick={onClose}>
       <Content onClick={handleContentClick}>
         <CardSection>
-          <InteractiveCard image={image} isSelected />
+          <InteractiveCard 
+            image={{
+              ...currentImage,
+              image_url: getImageUrl(currentImage.image_url)
+            }} 
+            isSelected 
+     
+          />
         </CardSection>
         <MoreSection>
           <More2Icon onClick={handleMoreClick} />
         </MoreSection>
         <ContentsSection>
-          <Title>{image.title}</Title>
-          <Description>{image.description}</Description>
+          <Title>{currentImage.title}</Title>
+          <Description>{currentImage.description}</Description>
           <Author>
-            {image.users.nickname}
+            {currentImage.users?.nickname}
             {isOwner && <OwnerBadge>내 작품</OwnerBadge>}
           </Author>
         </ContentsSection>
@@ -128,9 +182,9 @@ export default function CardDetail({
           onClose={handleCloseBottomSheet}
           actions={bottomSheetActions}
         />
-         {isModifyOpen && (
+        {isModifyOpen && (
           <CardModify
-            image={image}
+            image={currentImage}
             onClose={() => setIsModifyOpen(false)}
             onSave={handleModifySave}
           />

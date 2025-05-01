@@ -11,16 +11,14 @@ export interface ImageResponse {
   title: string;
   description: string;
   user_id: string;
-  created_at: string;
-  likes_count: number;
-  is_liked: boolean;
+  created_at?: string;
   users: {
       nickname: string;
   };
 }
 
 export interface ImageUpdateRequest {
-  image?: File;
   title?: string;
   description?: string;
+  image?: File;
 }

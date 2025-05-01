@@ -73,3 +73,42 @@ export const SaveButton = styled(Button)`
   background: ${colors.neon200};
   color: ${colors.black};
 `;
+
+// ...existing styles...
+
+export const ImageUploadArea = styled.div`
+  width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: 20px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    opacity: 0;
+  }
+
+  &:hover label {
+    opacity: 1;
+  }
+`;

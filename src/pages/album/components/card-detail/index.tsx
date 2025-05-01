@@ -6,12 +6,13 @@ import BottomSheet, { BottomSheetAction } from "../../../../components/bottom-sh
 import { CommonOverlay } from "../../../../components/bottom-sheet/index.styled";
 import { Author, CardSection, Content, ContentsSection, Description, More2Icon, MoreSection, Title } from "./index.styled";
 import styled from "styled-components";
+import CardModify from "../../card-modify";
 
 interface CardDetailProps {
   image: ImageResponse;
   currentUserId?: string | null; // 현재 로그인한 사용자 ID
   onClose: () => void;
-  onEdit?: () => void;
+  onEdit?: (updatedImage: Partial<ImageResponse>) => void;
   onDelete?: () => void;
   onShare?: () => void;
 }
@@ -25,10 +26,20 @@ export default function CardDetail({
   onShare 
 }: CardDetailProps) {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  
+  const [isModifyOpen, setIsModifyOpen] = useState(false);
   const isOwner = useMemo(() => {
     return image.user_id == currentUserId;
   }, [image.user_id, currentUserId]);
+
+  const handleEditClick = useCallback(() => {
+    setIsBottomSheetOpen(false);
+    setIsModifyOpen(true);
+  }, []);
+
+  const handleModifySave = useCallback((updatedImage: Partial<ImageResponse>) => {
+    onEdit?.(updatedImage);
+    setIsModifyOpen(false);
+  }, [onEdit]);
 
   const handleMoreClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -45,10 +56,7 @@ export default function CardDetail({
     if (isOwner) {
       actions.push({
         label: "수정하기",
-        onClick: () => {
-          onEdit?.();
-          handleCloseBottomSheet();
-        }
+        onClick: handleEditClick 
       });
       
       actions.push({
@@ -92,7 +100,7 @@ export default function CardDetail({
     });
     
     return actions;
-  }, [isOwner, onEdit, onDelete, onShare, handleCloseBottomSheet]);
+  }, [isOwner, handleEditClick, onDelete, onShare, handleCloseBottomSheet]);
 
   const handleContentClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -120,6 +128,13 @@ export default function CardDetail({
           onClose={handleCloseBottomSheet}
           actions={bottomSheetActions}
         />
+         {isModifyOpen && (
+          <CardModify
+            image={image}
+            onClose={() => setIsModifyOpen(false)}
+            onSave={handleModifySave}
+          />
+        )}
       </Content>
     </CommonOverlay>
   );

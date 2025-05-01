@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ImageResponse, imagesApi } from "../../api/images";
 import { AppBar } from "../../components/app-bar";
 import { Layout } from "../../components/layout";
@@ -10,17 +10,48 @@ import { colors } from "../../styles/colors";
 import CardDetail from "./components/card-detail";
 import { useStore } from "../../store/store";
 
+// 이미지 프리로더
+const preloadImage = (url: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = reject;
+    img.src = url;
+  });
+};
 
 export default function Album() {
   const [images, setImages] = useState<ImageResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<ImageResponse | null>(null); // ⭐ 선택된 이미지
-  const [isDetailOpen, setIsDetailOpen] = useState(false); // ⭐ 모달 열림 여부
+  const [selectedImage, setSelectedImage] = useState<ImageResponse | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   const user = useStore((state) => state.user);
-
   const currentUserId = user?.id ? String(user.id) : undefined;
+
+  // 이미지 프리로딩
+  useEffect(() => {
+    const preloadImages = async () => {
+      const newLoadedImages = new Set(loadedImages);
+      for (const image of images) {
+        if (!newLoadedImages.has(image.image_url)) {
+          try {
+            await preloadImage(image.image_url);
+            newLoadedImages.add(image.image_url);
+          } catch (error) {
+            console.error('이미지 프리로드 실패:', error);
+          }
+        }
+      }
+      setLoadedImages(newLoadedImages);
+    };
+
+    if (images.length > 0) {
+      preloadImages();
+    }
+  }, [images]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -37,29 +68,27 @@ export default function Album() {
     fetchImages();
   }, []);
 
-  const handleCardClick = (image: ImageResponse) => {
+  const handleCardClick = useCallback((image: ImageResponse) => {
     setSelectedImage(image);
     setIsDetailOpen(true);
-  };
+  }, []);
 
-  const closeDetail = () => {
-    setIsDetailOpen(false);   // 모달 닫기
-    setSelectedImage(null);   // 선택된 이미지 초기화
-  };
+  const closeDetail = useCallback(() => {
+    setIsDetailOpen(false);
+    setSelectedImage(null);
+  }, []);
 
   const handleDelete = useCallback(async (id: string) => {
     try {
       await imagesApi.delete(id);
       alert("삭제되었습니다.");
-      // 이미지 목록 새로고침
-      setImages(prev => prev.filter(img => img.id !== id))
-      // 모달 닫기
+      setImages(prev => prev.filter(img => img.id !== id));
       closeDetail();
     } catch (err) {
       console.error("삭제 실패:", err);
       alert("삭제에 실패했습니다.");
     }
-  }, []);
+  }, [closeDetail]);
   
   const handleImageEdit = useCallback((updatedImage: ImageResponse) => {
     setImages(prevImages => 
@@ -68,7 +97,6 @@ export default function Album() {
       )
     );
     
-    // 선택된 이미지도 업데이트
     if (selectedImage?.id === updatedImage.id) {
       setSelectedImage(updatedImage);
     }
@@ -95,8 +123,9 @@ export default function Album() {
             <InteractiveCard 
               key={image.id} 
               image={image} 
-              onClick={() => handleCardClick(image)}  // 클릭 핸들러 전달
+              onClick={() => handleCardClick(image)}
               isSelected={selectedImage?.id === image.id}
+              isLoaded={loadedImages.has(image.image_url)}
             />
           ))
         )}

@@ -1,14 +1,104 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback, memo } from "react";
 import { ImageResponse } from "../../../../api/images";
 import { colors } from "../../../../styles/colors";
+import styled, { keyframes, css } from 'styled-components';
 
 interface Props {
   image: ImageResponse;
   onClick?: () => void;
-  isSelected?: boolean
+  isSelected?: boolean;
+  isLoaded?: boolean;
 }
 
-export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
+const neonPulse = keyframes`
+  0% { box-shadow: 0 0 10px 2px rgba(0, 255, 128, 0.4); }
+  50% { box-shadow: 0 0 25px 8px rgba(0, 255, 128, 0.8); }
+  100% { box-shadow: 0 0 10px 2px rgba(0, 255, 128, 0.4); }
+`;
+
+const spin = keyframes`
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+`;
+
+const LoadingSpinner = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 4px solid ${colors.gray300};
+  border-top: 4px solid ${colors.neon100};
+  border-radius: 50%;
+  animation: ${spin} 1s linear infinite;
+`;
+
+const CardImage = styled.img<{ $isLoading: boolean }>`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: ${({ $isLoading }) => $isLoading ? 'none' : 'block'};
+`;
+
+const Shine = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  border-radius: 8px;
+  z-index: 1;
+`;
+
+const Prism = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  border-radius: 8px;
+  opacity: 0;
+  mix-blend-mode: screen;
+  z-index: 2;
+`;
+
+const CardWrapper = styled.div<{ $isSelected: boolean; $transform: string }>`
+  width: 100%;
+  max-width: 214px;
+  min-width: 50%;
+  aspect-ratio: 1 / 1.15;
+  background-color: ${colors.gray400};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  transform: ${({ $transform }) => $transform};
+  box-shadow: ${({ $isSelected }) => $isSelected ? '0 0 20px 5px rgba(0, 255, 128, 0.7)' : 'none'};
+  animation: ${({ $isSelected }) => $isSelected ? css`${neonPulse} 2s infinite alternate` : 'none'};
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+`;
+
+const CardContainer = styled.div`
+  display: flex;
+  align-items: center;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+`;
+
+export const InteractiveCard = memo(function InteractiveCard({ 
+  image, 
+  onClick, 
+  isSelected = false, 
+  isLoaded = false 
+}: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const shineRef = useRef<HTMLDivElement>(null);
   const prismRef = useRef<HTMLDivElement>(null);
@@ -16,14 +106,13 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
   const frameRef = useRef<number>(0);
   const [isMobile, setIsMobile] = useState(false);
   const [cardWidth, setCardWidth] = useState(0);
-  
-  // 모바일 기기 감지 및 카드 너비 측정
+  const [imageUrl, setImageUrl] = useState(image.image_url);
+  const [isLoading, setIsLoading] = useState(!isLoaded);
+  const [transform, setTransform] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg)');
+
   useEffect(() => {
     const checkSizes = () => {
-      // 기기 타입 감지 (터치 기기인지 여부 확인)
       setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
-      
-      // 카드 실제 너비 측정
       if (cardRef.current) {
         setCardWidth(cardRef.current.offsetWidth);
       }
@@ -31,8 +120,6 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
     
     checkSizes();
     window.addEventListener('resize', checkSizes);
-    
-    // 초기 로드 후 약간의 지연을 두고 한 번 더 측정 (DOM 렌더링 완료 후)
     const timer = setTimeout(checkSizes, 500);
     
     return () => {
@@ -42,265 +129,128 @@ export function InteractiveCard({ image, onClick, isSelected = false }: Props) {
     };
   }, []);
 
-  // 카드 크기가 변경되면 다시 측정
   useEffect(() => {
-    if (cardRef.current) {
-      const observer = new ResizeObserver(() => {
-        if (cardRef.current) {
-          setCardWidth(cardRef.current.offsetWidth);
-        }
-      });
-      
-      observer.observe(cardRef.current);
-      return () => observer.disconnect();
+    if (!isLoaded) {
+      setImageUrl(image.image_url);
+      setIsLoading(true);
     }
+  }, [image.image_url, isLoaded]);
+
+  const handleImageLoad = useCallback(() => {
+    setIsLoading(false);
   }, []);
 
-  // 절대적으로 좌표를 직접 계산하는 것보다 변화량을 제한
-  const clamp = (value: number, min: number, max: number) => {
+  const handleImageError = useCallback(() => {
+    setImageUrl('/images/default-image.png');
+    setIsLoading(false);
+  }, []);
+
+  const clamp = useCallback((value: number, min: number, max: number) => {
     return Math.min(Math.max(value, min), max);
-  };
+  }, []);
 
-  const handleInteraction = (clientX: number, clientY: number) => {
-    // 카드 크기에 따라 효과 적용 방식 결정
+  const handleInteraction = useCallback((clientX: number, clientY: number) => {
+    if (!cardRef.current || !shineRef.current || !prismRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
     const isSmallCard = cardWidth < 150;
-    
-    if (isSmallCard || isMobile) {
-      // 작은 카드나 모바일에서는 단순화된 이펙트 적용
-      applySimplifiedEffect(clientX, clientY);
-    } else {
-      // 충분히 큰 카드에서는 풀 이펙트 적용
-      applyFullEffect(clientX, clientY);
+    const sizeMultiplier = isSmallCard || isMobile 
+      ? Math.min(2, rect.width / 150)
+      : Math.min(1, rect.width / 200);
+
+    const rotateY = clamp((x - centerX) / centerX * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
+    const rotateX = clamp((centerY - y) / centerY * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
+
+    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${isSmallCard || isMobile ? 'scale(1.02)' : ''}`);
+
+    if (shineRef.current) {
+      shineRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, 
+        rgba(255,255,255,${isSmallCard || isMobile ? '0.5' : '0.4'}), 
+        transparent ${isSmallCard || isMobile ? '80%' : '70%'})`;
     }
-  };
 
-  const applySimplifiedEffect = (clientX: number, clientY: number) => {
-    cancelAnimationFrame(frameRef.current);
-    
-    frameRef.current = requestAnimationFrame(() => {
-      const card = cardRef.current;
-      const shine = shineRef.current;
-      
-      if (!card || !shine) return;
-
-      const rect = card.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      // 모바일에서의 회전 각도와 효과 강화
-      const sizeMultiplier = Math.min(2, rect.width / 150); // 회전 각도 증가
-      const rotateY = clamp((x - centerX) / centerX * 20 * sizeMultiplier, -20, 20);
-      const rotateX = clamp((centerY - y) / centerY * 20 * sizeMultiplier, -20, 20);
-
-      // 부드러운 움직임을 위한 트랜지션
-      card.style.transition = 'transform 0.1s ease-out';
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
-      
-      // 강화된 하이라이트 효과
-      shine.style.background = `
-        radial-gradient(circle at ${x}px ${y}px, 
-        rgba(255,255,255,0.5), 
-        transparent 80%
-      )`;
-    });
-  };
-
-  const applyFullEffect = (clientX: number, clientY: number) => {
-    cancelAnimationFrame(frameRef.current);
-    
-    frameRef.current = requestAnimationFrame(() => {
-      const card = cardRef.current;
-      const shine = shineRef.current;
-      const prism = prismRef.current;
-
-      if (!card || !shine || !prism) return;
-
-      const rect = card.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      // 카드 크기에 비례하게 회전 각도 조정
-      const sizeMultiplier = Math.min(1, rect.width / 200); // 카드 크기 비례 계수
-      const rotateY = clamp((x - centerX) / centerX * 15 * sizeMultiplier, -15, 15);
-      const rotateX = clamp((centerY - y) / centerY * 15 * sizeMultiplier, -15, 15);
-
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      shine.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255,255,255,0.4), transparent 70%)`;
-      prism.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px,
+    if (prismRef.current && !isSmallCard && !isMobile) {
+      prismRef.current.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px,
         rgba(255, 0, 150, 0.2),
         rgba(0, 255, 255, 0.2),
         rgba(255, 255, 0, 0.2),
         rgba(255, 0, 150, 0.2))`;
-      prism.style.opacity = "1";
-    });
-  };
+      prismRef.current.style.opacity = "1";
+    }
+  }, [cardWidth, isMobile, clamp]);
 
-  // 이동 감지 임계값 설정
-  const MOVE_THRESHOLD = 5;
-
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
     handleInteraction(e.clientX, e.clientY);
-  };
+  }, [handleInteraction]);
 
-  // 터치 이벤트 핸들러 수정
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!touchStartRef.current) return;
 
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
 
-    // 수직 스크롤 감도 조정
     if (deltaY > deltaX * 1.2) {
       resetStyles();
       return;
     }
 
-    // 즉각적인 효과 적용을 위해 임계값 낮춤
     if (deltaX > 2) {
-      e.preventDefault(); // 스크롤 방지
+      e.preventDefault();
       handleInteraction(touch.clientX, touch.clientY);
     }
-  };
+  }, [handleInteraction]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     e.stopPropagation();
     const touch = e.touches[0];
     touchStartRef.current = {
       x: touch.clientX,
       y: touch.clientY
     };
-  };
+  }, []);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     touchStartRef.current = null;
     resetStyles();
-  };
+  }, []);
 
-  const resetStyles = () => {
+  const resetStyles = useCallback(() => {
     cancelAnimationFrame(frameRef.current);
-    
-    const card = cardRef.current;
-    const shine = shineRef.current;
-    const prism = prismRef.current;
-
-    if (card) {
-      // 부드러운 복원 효과
-      card.style.transition = "all 0.3s cubic-bezier(0.23, 1, 0.32, 1)";
-      card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
-      
-      setTimeout(() => {
-        if (card) card.style.transition = "";
-      }, 300);
-    }
-    
-    if (shine) shine.style.background = "none";
-    if (prism) prism.style.opacity = "0";
-  };
+    setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg)');
+    if (shineRef.current) shineRef.current.style.background = 'none';
+    if (prismRef.current) prismRef.current.style.opacity = '0';
+  }, []);
 
   return (
-    <div 
-      style={{
-        ...styles.imageItem,
-        touchAction: 'pan-y',  // 수직 스크롤만 허용
-      }} 
-      onClick={onClick}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
-    >
-      <style>{neonAnimation}</style>
-      <div
+    <CardContainer onClick={onClick}>
+      <CardWrapper
         ref={cardRef}
-        style={styles.imageWrapper(isSelected)}
+        $isSelected={isSelected}
+        $transform={transform}
         onMouseMove={handleMouseMove}
         onMouseLeave={resetStyles}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
-        <img 
-          src={image.image_url} 
-          alt={image.title ?? "이미지"} 
-          style={styles.image} 
-          loading="lazy"
+        <CardImage
+          src={imageUrl}
+          alt={image.title}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+          $isLoading={isLoading}
         />
-        <div ref={shineRef} style={styles.shine}></div>
-        <div ref={prismRef} style={styles.prism}></div>
-      </div>
-    </div>
+        {isLoading && <LoadingSpinner />}
+        <Shine ref={shineRef} />
+        <Prism ref={prismRef} />
+      </CardWrapper>
+    </CardContainer>
   );
-}
-
-const styles = {
-  imageItem: {
-    display: "flex",
-    alignItems: "center",
-    touchAction: 'pan-y',  // 수직 스크롤 허용
-    userSelect: 'none' as const,
-    WebkitTapHighlightColor: 'transparent',
-  },
-  imageWrapper: (isSelected: boolean) => ({
-    width: "100%",
-    maxWidth: "214px",
-    minWidth: '50%',
-    aspectRatio: "1 / 1.15",
-    backgroundColor: `${colors.gray400}`,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "8px",
-    overflow: "hidden",
-    position: "relative" as const,
-    willChange: "transform",
-    transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)",
-    boxShadow: isSelected
-      ? "0 0 20px 5px rgba(0, 255, 128, 0.7)"
-      : "none",
-    animation: isSelected ? "neonPulse 2s infinite alternate" : "none",
-  }),
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover" as const,
-    pointerEvents: "none" as const,
-  },
-  shine: {
-    position: "absolute" as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    pointerEvents: "none" as const,
-    borderRadius: "8px",
-    zIndex: 1,
-  },
-  prism: {
-    position: "absolute" as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    pointerEvents: "none" as const,
-    borderRadius: "8px",
-    opacity: 0,
-    mixBlendMode: "screen" as const,
-    zIndex: 2,
-  },
-};
-
-export const neonAnimation = `
-@keyframes neonPulse {
-  0% {
-    box-shadow: 0 0 10px 2px rgba(0, 255, 128, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 25px 8px rgba(0, 255, 128, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 10px 2px rgba(0, 255, 128, 0.4);
-  }
-}
-`;
+});

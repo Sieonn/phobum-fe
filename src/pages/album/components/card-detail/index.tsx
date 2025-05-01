@@ -29,6 +29,14 @@ export default function CardDetail({
   const [isModifyOpen, setIsModifyOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState<ImageResponse>(image);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [imageUrl, setImageUrl] = useState(image.image_url);
+
+  // 이미지 URL 캐싱
+  useEffect(() => {
+    if (!isUpdating) {
+      setImageUrl(image.image_url);
+    }
+  }, [image.image_url, isUpdating]);
 
   const handleModifySave = useCallback(async (updatedImage: ImageResponse) => {
     if (!currentImage) return;
@@ -38,6 +46,7 @@ export default function CardDetail({
       
       // 현재 컴포넌트의 상태 업데이트
       setCurrentImage(updatedImage);
+      setImageUrl(updatedImage.image_url);
       
       // 부모 컴포넌트에도 업데이트 알림
       if (onEdit) {
@@ -59,6 +68,7 @@ export default function CardDetail({
   useEffect(() => {
     if (!isUpdating) {
       setCurrentImage(image);
+      setImageUrl(image.image_url);
     }
   }, [image, isUpdating]);
 
@@ -136,7 +146,7 @@ export default function CardDetail({
     e.stopPropagation();
   }, []);
 
-  const getImageUrl = (url: string) => {
+  const getImageUrl = useCallback((url: string) => {
     if (!url) return '/images/default-image.png';
     
     // Blob URL인 경우 그대로 반환
@@ -149,9 +159,7 @@ export default function CardDetail({
       return url;
     }
     return `${url}?t=${new Date().getTime()}`;
-  };
-
-
+  }, []);
 
   return (
     <CommonOverlay onClick={onClose}>
@@ -160,10 +168,9 @@ export default function CardDetail({
           <InteractiveCard 
             image={{
               ...currentImage,
-              image_url: getImageUrl(currentImage.image_url)
+              image_url: getImageUrl(imageUrl)
             }} 
             isSelected 
-     
           />
         </CardSection>
         <MoreSection>

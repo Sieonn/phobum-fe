@@ -6,6 +6,6 @@ position: absolute;
 bottom: 0;
     width: 100%;
     padding: 10px 25px 15px 25px;
-z-index: 1000;
+z-index: 1001;
 background-color: ${colors.black};
 `

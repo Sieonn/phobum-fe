@@ -29,8 +29,8 @@ export default function Album() {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [visibleImages, setVisibleImages] = useState<Set<string>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
-
   const user = useStore((state) => state.user);
+  const isLoggedIn = !!user;
   const currentUserId = user?.id ? String(user.id) : undefined;
 
   // 이미지 목록 가져오기 최적화
@@ -172,7 +172,7 @@ export default function Album() {
   if (error) {
     return (
       <Layout>
-        <AppBar type="default" />
+       <AppBar type="default" type2={isLoggedIn ? 'user' : 'ablum'} />
         <ErrorContainer>
           <ErrorMessage>{error}</ErrorMessage>
           <RetryButton onClick={() => window.location.reload()}>다시 시도</RetryButton>
@@ -184,7 +184,7 @@ export default function Album() {
   if (loading) {
     return (
       <Layout>
-        <AppBar type="default" />
+    <AppBar type="default" type2={isLoggedIn ? 'user' : 'ablum'} />
         <LoadingContainer>
           <LoadingSpinner />
         </LoadingContainer>
@@ -194,7 +194,7 @@ export default function Album() {
 
   return (
     <Layout>
-      <AppBar type="default" />
+     <AppBar type="default" type2={isLoggedIn ? 'user' : 'ablum'} />
       <Container>
         {images.length === 0 ? (
           <EmptyState>

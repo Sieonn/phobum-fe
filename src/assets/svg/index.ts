@@ -12,3 +12,4 @@ export { default as Phobum2 } from "./Phobum2";
 export { default as Picture } from "./Picture";
 export { default as Plus } from "./Plus";
 export { default as Screen2 } from "./Screen2";
+export { default as User } from "./User";

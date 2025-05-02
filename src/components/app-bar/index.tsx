@@ -8,6 +8,8 @@ import { useState, useRef, useEffect } from "react";
 import { useStore } from "../../store/store";
 import { CommonOverlay } from "../bottom-sheet/index.styled";
 import { colors } from "../../styles/colors";
+import axios from "axios";
+import { tokenStorage } from "../../utils/tokenStorage";
 
 type AppBarProps = {
     type: 'default' | 'back';
@@ -29,15 +31,37 @@ function DefaultAppBar({ type2 = 'ablum' }: Pick<AppBarProps, 'type2'>) {
         setIsOpen(!isOpen);
     };
 
-    const handleLogout = () => {
+    const handleDelete = async () => {
         // 로그아웃 로직 구현
+        const token = sessionStorage.getItem('refreshToken'); // 로컬 스토리지에서 토큰 가져오기
+        if (!token) {
+          alert('로그인이 필요합니다!');
+          return;
+        }
         setIsOpen(false);
-    };
-
-    const handleWithdrawal = () => {
-        // 회원탈퇴 로직 구현
-        setIsOpen(false);
-    };
+        try {
+          // 탈퇴 요청을 보낼 때 Authorization 헤더에 Bearer 토큰 추가
+          const response = await axios.delete(`${process.env.REACT_APP_API_BASE_URL}/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+    
+          if (response.status === 200) {
+            // 탈퇴 성공 시 로컬 스토리지에서 토큰 삭제하고, 로그인 페이지로 리다이렉트
+            sessionStorage.removeItem('refreshToken');
+            alert('회원 탈퇴가 완료되었습니다.');
+          }
+        } catch (error) {
+          console.error('회원 탈퇴 오류:', error);
+          alert('회원 탈퇴 중 오류가 발생했습니다.');
+        }
+      };
+      const handleLogout = () => {
+        tokenStorage.clearTokens();
+        alert('로그아웃 되었습니다.');
+        navigate(ROUTE_PATHS.INTRO);
+      };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -51,6 +75,7 @@ function DefaultAppBar({ type2 = 'ablum' }: Pick<AppBarProps, 'type2'>) {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
 
     return (
         <AppBarStyled>
@@ -85,7 +110,7 @@ function DefaultAppBar({ type2 = 'ablum' }: Pick<AppBarProps, 'type2'>) {
                         </UserItem>
                         <PopupItemWrapper>
                             <PopupItem onClick={handleLogout}>로그아웃</PopupItem>
-                            <PopupItem onClick={handleWithdrawal}>회원탈퇴</PopupItem>
+                            <PopupItem onClick={handleDelete}>회원탈퇴</PopupItem>
                         </PopupItemWrapper>
                     </UserPopup>
                 </div>
@@ -100,7 +125,7 @@ export function AppBar({ type, type2 = 'ablum' }: AppBarProps) {
     };
     return (
         <Wrapper>
-            {type === 'default' ? <DefaultAppBar type2={type2} /> : <Backicon onClick={handleBack} />}
+            {type === 'default' ? <DefaultAppBar type2={type2} /> : <Backicon width={13} style={{cursor:'pointer'}} onClick={handleBack} />}
         </Wrapper>
     );
 }

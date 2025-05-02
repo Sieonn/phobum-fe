@@ -2,7 +2,6 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import SvgPlus from '../../assets/svg/Plus';
-import theme from '../../styles/theme';
 import { colors } from '../../styles/colors';
 const Fab = styled.button`
   position: absolute;

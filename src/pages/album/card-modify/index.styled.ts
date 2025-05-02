@@ -3,16 +3,14 @@ import { colors } from "../../../styles/colors";
 
 export const ModifyContent = styled.div`
     background-color: ${colors.gray400};
-    padding: 20px;
+    padding: 30px 20px;
     border-radius: 20px;
     width: 90%;
+    max-height: 90%;
     max-width: 400px;
   
 `;
 
-export const Title = styled.div`
-    font-size: 1rem;    
-`
 
 export const Form = styled.form`
   display: flex;
@@ -20,65 +18,39 @@ export const Form = styled.form`
   gap: 20px;
 `;
 
-export const InputGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-export const Label = styled.label`
-  color: ${colors.white};
-  font-size: 0.9rem;
-`;
-
-export const Input = styled.input`
-  background: ${colors.gray300};
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  color: ${colors.white};
-`;
-
-export const TextArea = styled.textarea`
-  background: ${colors.gray300};
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  color: ${colors.white};
-  min-height: 100px;
-  resize: vertical;
-`;
 
 export const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
-  justify-content: flex-end;
   margin-top: 20px;
+  width: 100%;
 `;
 
-export const Button = styled.button`
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  font-size: 0.9rem;
-  cursor: pointer;
-`;
-
-export const CancelButton = styled(Button)`
+export const CancelButton = styled.button`
   background: ${colors.gray300};
   color: ${colors.white};
-`;
+  border-radius: 30px;
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  &:hover {
+    background-color: ${colors.gray200};
+  }
 
-export const SaveButton = styled(Button)`
-  background: ${colors.neon200};
-  color: ${colors.black};
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 // ...existing styles...
 
 export const ImageUploadArea = styled.div`
-  width: 100%;
-  aspect-ratio: 1;
+  width: 60%;
+  aspect-ratio: 0.9;
+  margin: auto;
   margin-bottom: 20px;
   position: relative;
   border-radius: 8px;
@@ -102,13 +74,23 @@ export const ImageUploadArea = styled.div`
     background: rgba(0, 0, 0, 0.7);
     color: white;
     text-align: center;
-    padding: 8px;
+    padding: 15px;
     cursor: pointer;
     transition: opacity 0.2s;
-    opacity: 0;
+    opacity: 1;
+    font-size: 0.9rem;
   }
 
   &:hover label {
-    opacity: 1;
+    /* opacity: 1; */
+    color: ${colors.neon100};
   }
 `;
+
+export const AuthorandDateStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-size: 0.7rem;
+  margin-left: auto;
+  gap:5px
+`

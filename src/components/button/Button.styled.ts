@@ -13,7 +13,7 @@ interface WrapperProps {
 
 // box 함수 스타일을 함수형으로 작성
 const box = ({ fullWidth, size, state, radius }: WrapperProps) => css`
-  padding: 15px 25px;
+  padding: 13px 25px;
   border-radius: ${radius ? radius : '30px'};
   cursor: pointer;
 

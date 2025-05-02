@@ -13,7 +13,7 @@ export const InputStyled = styled.input.attrs((props: any) => ({
   as: props.type === 'textarea' ? 'textarea' : 'input',
 }))<{ state: 'default' | 'error'; type: 'default' | 'textarea' }>`
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   background-color: ${colors.gray300};
   outline: none;
   border-radius: ${theme.size.radius};
@@ -21,8 +21,8 @@ export const InputStyled = styled.input.attrs((props: any) => ({
   border: 1px solid ${colors.gray300};
   transition: border-color 0.3s ease;
 
-  padding: ${({ type }) => (type === 'textarea' ? '20px' : '0px 20px')};
-  height: ${({ type }) => (type === 'textarea' ? '20dvh' : '50px')};
+  padding: ${({ type }) => (type === 'textarea' ? '15px 20px' : '0px 20px')};
+  height: ${({ type }) => (type === 'textarea' ? '15dvh' : '45px')};
   resize: none;
   line-height: 1.5;
   z-index: 1;

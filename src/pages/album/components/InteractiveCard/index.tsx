@@ -40,6 +40,10 @@ const CardImage = styled.img<{ $isLoading: boolean }>`
   object-fit: cover;
   border-radius: 8px;
   display: ${({ $isLoading }) => $isLoading ? 'none' : 'block'};
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  contain: content;
 `;
 
 const Shine = styled.div`
@@ -49,7 +53,7 @@ const Shine = styled.div`
   right: 0;
   bottom: 0;
   pointer-events: none;
-  border-radius: 8px;
+  border-radius: 3px;
   z-index: 1;
 `;
 
@@ -72,9 +76,6 @@ const CardWrapper = styled.div<{ $isSelected: boolean; $transform: string }>`
   min-width: 50%;
   aspect-ratio: 1 / 1.15;
   background-color: ${colors.gray400};
-  display: flex;
-  justify-content: center;
-  align-items: center;
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -83,6 +84,10 @@ const CardWrapper = styled.div<{ $isSelected: boolean; $transform: string }>`
   box-shadow: ${({ $isSelected }) => $isSelected ? '0 0 20px 5px rgba(0, 255, 128, 0.7)' : 'none'};
   animation: ${({ $isSelected }) => $isSelected ? css`${neonPulse} 2s infinite alternate` : 'none'};
   transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  contain: content;
 `;
 
 const CardContainer = styled.div`
@@ -109,6 +114,8 @@ export const InteractiveCard = memo(function InteractiveCard({
   const [imageUrl, setImageUrl] = useState(image.image_url);
   const [isLoading, setIsLoading] = useState(!isLoaded);
   const [transform, setTransform] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg)');
+  const [isHovered, setIsHovered] = useState(false);
+  const rafId = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const checkSizes = () => {
@@ -130,9 +137,9 @@ export const InteractiveCard = memo(function InteractiveCard({
   }, []);
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (image.image_url !== imageUrl) {
       setImageUrl(image.image_url);
-      setIsLoading(true);
+      setIsLoading(!isLoaded);
     }
   }, [image.image_url, isLoaded]);
 
@@ -150,8 +157,8 @@ export const InteractiveCard = memo(function InteractiveCard({
   }, []);
 
   const handleInteraction = useCallback((clientX: number, clientY: number) => {
-    if (!cardRef.current || !shineRef.current || !prismRef.current) return;
-
+    if (!cardRef.current || !isHovered) return;
+    
     const rect = cardRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
@@ -166,23 +173,50 @@ export const InteractiveCard = memo(function InteractiveCard({
     const rotateY = clamp((x - centerX) / centerX * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
     const rotateX = clamp((centerY - y) / centerY * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
 
-    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${isSmallCard || isMobile ? 'scale(1.02)' : ''}`);
-
-    if (shineRef.current) {
-      shineRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, 
-        rgba(255,255,255,${isSmallCard || isMobile ? '0.5' : '0.4'}), 
-        transparent ${isSmallCard || isMobile ? '80%' : '70%'})`;
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
     }
+    
+    rafId.current = requestAnimationFrame(() => {
+      setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${isSmallCard || isMobile ? 'scale(1.02)' : ''}`);
+      
+      if (shineRef.current) {
+        shineRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, 
+          rgba(255,255,255,${isSmallCard || isMobile ? '0.4' : '0.3'}), 
+          transparent ${isSmallCard || isMobile ? '90%' : '80%'})`;
+      }
 
-    if (prismRef.current && !isSmallCard && !isMobile) {
-      prismRef.current.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px,
-        rgba(255, 0, 150, 0.2),
-        rgba(0, 255, 255, 0.2),
-        rgba(255, 255, 0, 0.2),
-        rgba(255, 0, 150, 0.2))`;
-      prismRef.current.style.opacity = "1";
+      if (prismRef.current && !isSmallCard && !isMobile) {
+        prismRef.current.style.background = `conic-gradient(from ${x + y}deg at ${x}px ${y}px,
+          rgba(255, 0, 150, 0.2),
+          rgba(0, 255, 255, 0.2),
+          rgba(255, 255, 0, 0.2),
+          rgba(255, 0, 150, 0.2))`;
+        prismRef.current.style.opacity = "1";
+      }
+    });
+  }, [cardWidth, isMobile, isHovered, clamp]);
+
+  useEffect(() => {
+    return () => {
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
     }
-  }, [cardWidth, isMobile, clamp]);
+    setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg)');
+    if (shineRef.current) shineRef.current.style.background = 'none';
+    if (prismRef.current) prismRef.current.style.opacity = '0';
+  }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     handleInteraction(e.clientX, e.clientY);
@@ -234,7 +268,8 @@ export const InteractiveCard = memo(function InteractiveCard({
         $isSelected={isSelected}
         $transform={transform}
         onMouseMove={handleMouseMove}
-        onMouseLeave={resetStyles}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -246,10 +281,15 @@ export const InteractiveCard = memo(function InteractiveCard({
           onLoad={handleImageLoad}
           onError={handleImageError}
           $isLoading={isLoading}
+          loading="eager"
         />
         {isLoading && <LoadingSpinner />}
-        <Shine ref={shineRef} />
-        <Prism ref={prismRef} />
+        {isHovered && (
+          <>
+            <Shine ref={shineRef} />
+            <Prism ref={prismRef} />
+          </>
+        )}
       </CardWrapper>
     </CardContainer>
   );

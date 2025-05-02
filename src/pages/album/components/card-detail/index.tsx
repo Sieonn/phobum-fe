@@ -17,6 +17,27 @@ interface CardDetailProps {
   onShare?: () => void;
 }
 
+// 단순화된 카드 컴포넌트
+const SimpleCard = styled.div`
+  width: 100%;
+  max-width: 214px;
+  min-width: 50%;
+  aspect-ratio: 1 / 1.15;
+  background-color: ${colors.gray400};
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 20px 5px rgba(0, 255, 128, 0.7);
+  animation: ${({ theme }) => theme.animations.neonPulse} 2s infinite alternate;
+`;
+
+const SimpleCardImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+`;
+
 export default function CardDetail({ 
   image, 
   currentUserId, 
@@ -30,32 +51,35 @@ export default function CardDetail({
   const [currentImage, setCurrentImage] = useState<ImageResponse>(image);
   const [isUpdating, setIsUpdating] = useState(false);
   const [imageUrl, setImageUrl] = useState(image.image_url);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  // 이미지 URL 캐싱
+  const getImageUrl = useCallback((url: string) => {
+    if (!url) return '/images/default-image.png';
+    if (url.startsWith('blob:')) return url;
+    return url;  // 타임스탬프 제거
+  }, []);
+
+  // 이미지 URL 캐싱 최적화
   useEffect(() => {
-    if (!isUpdating) {
+    if (!isUpdating && image.image_url !== imageUrl) {
       setImageUrl(image.image_url);
+      setIsImageLoaded(false);
     }
-  }, [image.image_url, isUpdating]);
+  }, [image.image_url, isUpdating, imageUrl]);
 
   const handleModifySave = useCallback(async (updatedImage: ImageResponse) => {
     if (!currentImage) return;
     
     try {
       setIsUpdating(true);
-      
-      // 현재 컴포넌트의 상태 업데이트
       setCurrentImage(updatedImage);
       setImageUrl(updatedImage.image_url);
       
-      // 부모 컴포넌트에도 업데이트 알림
       if (onEdit) {
         onEdit(updatedImage);
       }
       
-      // 수정 모달 닫기
       setIsModifyOpen(false);
-
     } catch (error) {
       console.error('수정 실패:', error);
       alert('수정에 실패했습니다.');
@@ -66,14 +90,14 @@ export default function CardDetail({
 
   // image prop이 변경될 때만 currentImage 업데이트
   useEffect(() => {
-    if (!isUpdating) {
+    if (!isUpdating && image.id !== currentImage.id) {
       setCurrentImage(image);
       setImageUrl(image.image_url);
     }
-  }, [image, isUpdating]);
+  }, [image, isUpdating, currentImage.id]);
 
   const isOwner = useMemo(() => {
-    return currentImage.user_id == currentUserId;
+    return currentImage.user_id === currentUserId;
   }, [currentImage.user_id, currentUserId]);
 
   const handleEditClick = useCallback(() => {
@@ -90,7 +114,7 @@ export default function CardDetail({
     setIsBottomSheetOpen(false);
   }, []);
 
-  const bottomSheetActions: BottomSheetAction[] = useMemo(() => {
+  const bottomSheetActions = useMemo(() => {
     const actions: BottomSheetAction[] = [];
     
     if (isOwner) {
@@ -110,14 +134,13 @@ export default function CardDetail({
         color: colors.red100
       });
     } else {
-      // 권한 없는 사용자에게는 비활성화된 버튼 표시
       actions.push({
         label: "수정하기 (권한 없음)",
         onClick: () => {
           alert("수정 권한이 없습니다.");
           handleCloseBottomSheet();
         },
-        color: colors.gray300 // 비활성화된 색상
+        color: colors.gray300
       });
       
       actions.push({
@@ -126,11 +149,10 @@ export default function CardDetail({
           alert("삭제 권한이 없습니다.");
           handleCloseBottomSheet();
         },
-        color: colors.gray300 // 비활성화된 색상
+        color: colors.gray300
       });
     }
     
-    // 공유하기는 모든 사용자에게 활성화
     actions.push({
       label: "공유하기",
       onClick: () => {
@@ -146,21 +168,6 @@ export default function CardDetail({
     e.stopPropagation();
   }, []);
 
-  const getImageUrl = useCallback((url: string) => {
-    if (!url) return '/images/default-image.png';
-    
-    // Blob URL인 경우 그대로 반환
-    if (url.startsWith('blob:')) {
-      return url;
-    }
-    
-    // 이미 URL에 쿼리 파라미터가 있는지 확인
-    if (url.includes('?')) {
-      return url;
-    }
-    return `${url}?t=${new Date().getTime()}`;
-  }, []);
-
   return (
     <CommonOverlay onClick={onClose}>
       <Content onClick={handleContentClick}>
@@ -171,6 +178,7 @@ export default function CardDetail({
               image_url: getImageUrl(imageUrl)
             }} 
             isSelected 
+            isLoaded={isImageLoaded}
           />
         </CardSection>
         <MoreSection>

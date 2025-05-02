@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ButtonGroup, CancelButton, Form, ImageUploadArea, Input, InputGroup, Label, ModifyContent, SaveButton, TextArea, Title } from './index.styled';
+import { AuthorandDateStyle,  ButtonGroup, CancelButton, Form, ImageUploadArea,  ModifyContent, } from './index.styled';
 import { ImageResponse, ImageUpdateRequest } from '../../../api/images';
 import { CommonOverlay } from '../../../components/bottom-sheet/index.styled';
 import axios from 'axios';
 import { imagesApi } from '../../../api/images';
+import { Input2 } from '../../../components/input copy';
+import { Button } from '../../../components/button';
+import { colors } from '../../../styles/colors';
+import FormattedDate from '../../../components/formatted-date';
 
 interface CardModifyProps {
   image: ImageResponse;
@@ -42,9 +46,13 @@ export default function CardModify({ image, onClose, onSave }: CardModifyProps) 
     }
   }, [previewUrl]);
   
+  const isFormFilled = title.trim() !== '' && description.trim() !== '';
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!image) return;
+
+    setIsSubmitting(true);
 
     try {
       const updateData: ImageUpdateRequest = {
@@ -68,13 +76,14 @@ export default function CardModify({ image, onClose, onSave }: CardModifyProps) 
     } catch (error) {
       console.error('이미지 수정 실패:', error);
       alert('이미지 수정에 실패했습니다.');
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <CommonOverlay onClick={onClose}>
+    <CommonOverlay onClick={onClose} style={{background:'none', backdropFilter:'none'}}>
       <ModifyContent onClick={e => e.stopPropagation()}>
-        <Title>이미지 수정</Title>
         
         <Form onSubmit={handleSubmit}>
           <ImageUploadArea>
@@ -87,30 +96,25 @@ export default function CardModify({ image, onClose, onSave }: CardModifyProps) 
             />
             <label htmlFor="imageUpload">이미지 변경</label>
           </ImageUploadArea>
-          <InputGroup>
-            <Label>제목</Label>
-            <Input 
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="제목을 입력하세요"
-              required
-            />
-          </InputGroup>
-          <InputGroup>
-            <Label>설명</Label>
-            <TextArea 
-              value={description}
+       
+          <Input2 label='제목'  value={title}
+              onChange={(e) => setTitle(e.target.value)}  placeholder="제목을 입력하세요"
+              required/>
+      
+           <Input2 label='설명'  value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="설명을 입력하세요"
-            />
-          </InputGroup>
+              placeholder="설명을 입력하세요" type="textarea"/>
+              <AuthorandDateStyle>
+              <div style={{marginLeft:'auto', color:`${colors.neon100}`}}>{image.users.nickname}</div>
+              <FormattedDate date={image.updated_at}/>
+              </AuthorandDateStyle>
+           </Form>
           <ButtonGroup>
-            <CancelButton type="button" onClick={onClose} disabled={isSubmitting}>취소</CancelButton>
-            <SaveButton type="submit" disabled={isSubmitting}>
-              {isSubmitting ? '저장 중...' : '저장'}
-            </SaveButton>
+    
+           <CancelButton onClick={onClose} disabled={isSubmitting}>취소</CancelButton>
+            <Button  disabled={isSubmitting || !isFormFilled}
+  status={isFormFilled ? 'active' : 'default'} onClick={handleSubmit} style={{flex:'1'}}>{isSubmitting ? '저장 중...' : '저장'}</Button>
           </ButtonGroup>
-        </Form>
       </ModifyContent>
     </CommonOverlay>
   );

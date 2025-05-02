@@ -167,11 +167,18 @@ export const InteractiveCard = memo(function InteractiveCard({
     
     const isSmallCard = cardWidth < 150;
     const sizeMultiplier = isSmallCard || isMobile 
-      ? Math.min(2, rect.width / 150)
+      ? Math.min(2.5, rect.width / 120) 
       : Math.min(1, rect.width / 200);
 
-    const rotateY = clamp((x - centerX) / centerX * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
-    const rotateX = clamp((centerY - y) / centerY * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
+    // const rotateY = clamp((x - centerX) / centerX * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
+    // const rotateX = clamp((centerY - y) / centerY * (isSmallCard || isMobile ? 20 : 15) * sizeMultiplier, -20, 20);
+ // 모바일에서는 반응성을 더 높이고 회전 각도 범위도 확장
+ const baseRotation = isMobile ? 25 : 15;
+ const maxRotation = isMobile ? 30 : 20;
+ 
+ // 작은 움직임에도 더 민감하게 반응하도록 변환
+ const rotateY = clamp((x - centerX) / centerX * baseRotation * sizeMultiplier, -maxRotation, maxRotation);
+ const rotateX = clamp((centerY - y) / centerY * baseRotation * sizeMultiplier, -maxRotation, maxRotation);
 
     if (rafId.current) {
       cancelAnimationFrame(rafId.current);

@@ -2,13 +2,37 @@ import styled from "styled-components";
 import { colors } from "../../styles/colors";
 
 export const ModalContainer = styled.div`
-    width: 50%;
     margin: auto;
     background-color: ${colors.gray400};
     border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: fixed;
+    width: 70%;
+    max-width: 380px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1002;
+    gap: 20px;
 `;
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; 
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ModalButton = styled.button`
+    width: 100%;
+    border-radius: 30px
+`

@@ -12,6 +12,7 @@ import Gnb from "../../components/gnb";
 import { TextStyled } from "../intro/Intro.styled";
 import { colors } from "../../styles/colors";
 import { useImageUpload } from "../../hooks/useImageUpload";
+import Modal from "../../components/modal";  // 모달 컴포넌트 가져오기
 
 export default function ImageUpload() {
   const user = useStore();
@@ -23,7 +24,7 @@ export default function ImageUpload() {
     handleFileSelect,
     convertToWebP,
     reset,
-  } = useImageUpload({ onBeforeUnload: true }); // ✅ 훅 사용
+  } = useImageUpload({ onBeforeUnload: true });
 
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,11 +32,14 @@ export default function ImageUpload() {
     description: "",
     author: user?.user?.nickname || "",
   });
+  const [modalOpen, setModalOpen] = useState(false); // 모달 상태
+  const [isFormDirty, setIsFormDirty] = useState(false); // 작성 중인지 여부 체크
 
   const isFormValid = formData.title !== '' && formData.description !== '';
 
   const handleFormChange = (data: typeof formData) => {
     setFormData(data);
+    setIsFormDirty(data.title !== '' || data.description !== '' || file !== null); // 작성 중이면 true
   };
 
   const handleSubmit = async () => {
@@ -55,7 +59,7 @@ export default function ImageUpload() {
 
       await imagesApi.upload(imageData);
       alert("이미지가 성공적으로 업로드되었습니다.");
-      reset(); // ✅ 초기화
+      reset(); // 초기화
       setFormData({
         title: "",
         description: "",
@@ -70,9 +74,27 @@ export default function ImageUpload() {
     }
   };
 
+  // 뒤로가기 처리 함수 (작성 중이면 모달 띄우기)
+  const handleBackWithConfirm = () => {
+    if (isFormDirty) {
+      setModalOpen(true);  // 작성 중일 때 모달 열기
+    } else {
+      navigate(-1); // 아무것도 작성 안했으면 그냥 뒤로가기
+    }
+  };
+
+  const handleConfirmLeave = () => {
+    setModalOpen(false);
+    navigate(-1); // 뒤로가기
+  };
+
+  const handleCancelLeave = () => {
+    setModalOpen(false); // 모달 닫기
+  };
+
   return (
     <Layout>
-      <AppBar type="back" />
+      <AppBar type="back" onBack={handleBackWithConfirm} />
       <Container>
         <TextStyled style={{ fontSize: '1.25rem', fontWeight: '500' }}>
           나만의 <span style={{ color: colors.neon100 }}>카드</span> 만들기
@@ -118,6 +140,15 @@ export default function ImageUpload() {
         name={isUploading ? "업로드 중..." : "제작하기"}
         status={isFormValid && !isUploading ? 'active' : 'default'}
       />
+      {/* 모달 렌더링 */}
+      {modalOpen && (
+        <Modal
+          title="작성 중인 내용이 사라집니다"
+          description="정말 나가시겠습니까?"
+          onConfirm={handleConfirmLeave}
+          onCancel={handleCancelLeave}
+        />
+      )}
     </Layout>
   );
 }

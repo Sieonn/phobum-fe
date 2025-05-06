@@ -132,7 +132,7 @@ export default function ImageUpload() {
 
     return (
         <Layout>
-            <AppBar type="default" type2="ablum" />
+            <AppBar type="back" />
             <Container>
                 <TextStyled style={{ fontSize: '1.25rem', fontWeight: '500' }}>
                     나만의 <span style={{ color: `${colors.neon100}` }}>카드</span> 만들기

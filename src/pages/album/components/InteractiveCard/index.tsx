@@ -74,7 +74,7 @@ const CardWrapper = styled.div<{ $isSelected: boolean; $transform: string }>`
   width: 100%;
   max-width: 214px;
   min-width: 50%;
-  aspect-ratio: 1 / 1.15;
+  aspect-ratio: 1 / 1.2;
   background-color: ${colors.gray400};
   border-radius: 8px;
   overflow: hidden;

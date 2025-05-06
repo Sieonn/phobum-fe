@@ -34,6 +34,8 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     overscroll-behavior: none;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   a {

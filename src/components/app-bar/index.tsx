@@ -1,6 +1,5 @@
 import { Wrapper, AppBarStyled, UserPopup, PopupItem, UserItem, PopupItemWrapper } from "./index.styled";
 import { Backicon, Phobum2, Screen2, User } from "../../assets/svg";
-import { Logo, Home, Grid } from "../../assets/svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "../../constants/routes";
 import SvgHome2 from "../../assets/svg/Home2";
@@ -13,10 +12,11 @@ import { tokenStorage } from "../../utils/tokenStorage";
 
 type AppBarProps = {
     type: 'default' | 'back';
-    type2?: 'ablum' | 'user';
+    type2?: 'album' | 'user';
+    onBack?: () => void;
 };
 
-function DefaultAppBar({ type2 = 'ablum' }: Pick<AppBarProps, 'type2'>) {
+function DefaultAppBar({ type2 = 'album' }: AppBarProps) {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const popupRef = useRef<HTMLDivElement>(null);
@@ -62,6 +62,7 @@ function DefaultAppBar({ type2 = 'ablum' }: Pick<AppBarProps, 'type2'>) {
         alert('로그아웃 되었습니다.');
         navigate(ROUTE_PATHS.INTRO);
       };
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -119,13 +120,18 @@ function DefaultAppBar({ type2 = 'ablum' }: Pick<AppBarProps, 'type2'>) {
     );
 }
 
-export function AppBar({ type, type2 = 'ablum' }: AppBarProps) {
+export function AppBar({ type, type2 = 'ablum', onBack }: AppBarProps) {
     const handleBack = () => {
-        window.history.back();
-    };
+        if (onBack) {
+            onBack();
+        }
+        else {
+            window.history.back();
+        }
+       }
     return (
         <Wrapper>
-            {type === 'default' ? <DefaultAppBar type2={type2} /> : <Backicon width={13} style={{cursor:'pointer'}} onClick={handleBack} />}
+            {type === 'default' ? <DefaultAppBar type={type} type2={type2} /> : <Backicon width={13} style={{cursor:'pointer'}} onClick={handleBack} />}
         </Wrapper>
     );
 }

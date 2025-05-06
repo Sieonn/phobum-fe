@@ -184,7 +184,7 @@ export default function Album() {
   if (loading) {
     return (
       <Layout>
-    <AppBar type="default" type2={isLoggedIn ? 'user' : 'album'} />
+    <AppBar type="default" type2={isLoggedIn ? "user" : "album"} />
         <LoadingContainer>
           <LoadingSpinner />
         </LoadingContainer>
@@ -194,7 +194,7 @@ export default function Album() {
 
   return (
     <Layout>
-     <AppBar type="default" type2={isLoggedIn ? 'user' : 'album'} />
+   <AppBar type="default" type2={isLoggedIn ? "user" : "album"} />
       <Container>
         {images.length === 0 ? (
           <EmptyState>

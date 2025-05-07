@@ -10,7 +10,7 @@ export const CommonOverlay = styled.div`
   height: 100%; 
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
-  z-index: 1000;
+  z-index: ${theme.zIndex.overlay};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,7 +39,7 @@ export const Overlay = styled.div`
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: ${theme.zIndex.overlay};
 `;
 // BottomSheet용 반투명 오버레이 스타일 수정
 export const DimmedOverlay = styled.div<{ $isOpen: boolean }>`
@@ -49,7 +49,7 @@ export const DimmedOverlay = styled.div<{ $isOpen: boolean }>`
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  z-index: ${theme.zIndex.overlay};
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: ${({ $isOpen }) => ($isOpen ? "auto" : "none")};
@@ -104,7 +104,7 @@ export const Container = styled.div<{ $isOpen: boolean }>`
   background: ${colors.gray400};
   border-radius: 20px 20px 0 0;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1001;
+  z-index: ${theme.zIndex.bottomSheet};
   padding: 0 20px;
  // padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
   will-change: transform;

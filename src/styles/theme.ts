@@ -10,11 +10,13 @@ const theme = {
     radius: '10px',
   },
   zIndex: {
-    overlay: 5,
-    appBar: 10,
-    bottomSheet: 30,
-    dialog: 40,
-    card: 40,
+    appBar: 100,
+    FAB: 100,
+    overlay: 200,
+    bottomSheet: 300,
+    modal: 400,
+    toast: 500,
+    popup: 500
   },
   typo: { ...typography },
 } as const;

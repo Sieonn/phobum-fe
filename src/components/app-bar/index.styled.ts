@@ -14,7 +14,6 @@ export const Wrapper = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
 `;
 
 export const AppBarStyled = styled.div`
@@ -23,7 +22,6 @@ export const AppBarStyled = styled.div`
     align-items: center;
     width: 100%;
     position: relative;
-    z-index: 1001;
 `
 
 export const UserPopup = styled.div<{ $isOpen: boolean }>`
@@ -36,7 +34,7 @@ export const UserPopup = styled.div<{ $isOpen: boolean }>`
   min-width: 150px;
   display: ${({ $isOpen }) => ($isOpen ? 'block' : 'none')};
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1001;
+  z-index: ${theme.zIndex.popup};
 `;
 export const UserItem = styled.div`
   width: 100%;

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { colors } from "../../styles/colors";
-import { Image2, Plus } from "../../assets/svg";
+import { Image2 } from "../../assets/svg";
 import theme from "../../styles/theme";
 
 export const Container = styled.div`
@@ -11,7 +11,7 @@ export const Container = styled.div`
     width: 100%;
     gap: 15px;
     overflow-y: scroll;
-    z-index: 100;
+    /* z-index: 100; */
 `;
 
 export const UploadContainer = styled.div`

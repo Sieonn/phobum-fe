@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { colors } from "../../styles/colors";
+import theme from "../../styles/theme";
 
 export const ModalContainer = styled.div`
     margin: auto;
@@ -15,7 +16,7 @@ export const ModalContainer = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1002;
+    z-index: ${theme.zIndex.modal};
     gap: 20px;
 `;
 export const Overlay = styled.div`
@@ -26,7 +27,7 @@ export const Overlay = styled.div`
   height: 100%; 
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
-  z-index: 1001;
+  z-index: ${theme.zIndex.overlay};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,5 +35,5 @@ export const Overlay = styled.div`
 
 export const ModalButton = styled.button`
     width: 100%;
-    border-radius: 30px
+    border-radius: 30px;
 `

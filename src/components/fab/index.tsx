@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import SvgPlus from '../../assets/svg/Plus';
 import { colors } from '../../styles/colors';
+import theme from '../../styles/theme';
 const Fab = styled.button`
   position: absolute;
   bottom: 2rem;
@@ -17,7 +18,7 @@ const Fab = styled.button`
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  /* z-index: 900; */
+z-index: ${theme.zIndex.FAB};
   cursor: pointer;
   transition: all 0.3s ease;
 

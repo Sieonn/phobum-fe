@@ -3,13 +3,14 @@ import theme from "../../styles/theme";
 import { colors } from "../../styles/colors";
 
 export const Wrapper = styled.header`
-  position: absolute;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 20px;
   z-index: ${theme.zIndex.appBar};
   width: 100%;
-  height: ${theme.size.appBarHeight};
   max-width: ${theme.size.maxWidth};//calc(${theme.size.maxWidth} - 50px);
   display: flex;
   align-items: center;

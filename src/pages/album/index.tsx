@@ -240,7 +240,6 @@ export const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 16px;
-  margin-top: 20px;
   padding: 0px 20px;
   overflow-y: scroll;
 `;

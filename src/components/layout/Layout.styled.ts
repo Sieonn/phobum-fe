@@ -12,6 +12,7 @@ export const Wrapper = styled.div`
   background-color: ${colors.black};
   margin: auto;
   position: relative;
+  isolation: isolate;
 `;
 
 export const Main = styled.div`
@@ -22,6 +23,7 @@ export const Main = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  z-index: ${theme.zIndex.appBar};
   /* margin: auto;
   justify-content: center; */
 `;

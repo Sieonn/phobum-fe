@@ -18,7 +18,7 @@ const Fab = styled.button`
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-z-index: ${theme.zIndex.FAB};
+  z-index: ${theme.zIndex.FAB};
   cursor: pointer;
   transition: all 0.3s ease;
 

@@ -23,7 +23,7 @@ export const Main = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-  z-index: ${theme.zIndex.appBar};
+  position: relative;
   /* margin: auto;
   justify-content: center; */
 `;

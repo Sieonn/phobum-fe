@@ -9,7 +9,6 @@ export const CommonOverlay = styled.div`
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 100%; 
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
   z-index: ${theme.zIndex.overlay};
